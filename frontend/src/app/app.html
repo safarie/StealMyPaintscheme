@@ -1,0 +1,9 @@
+<h1>{{ title() }}</h1>
+
+@if (helloMessage()) {
+  <p>API says: {{ helloMessage() }}</p>
+} @else {
+  <p>Loading message from API...</p>
+}
+
+<router-outlet />
