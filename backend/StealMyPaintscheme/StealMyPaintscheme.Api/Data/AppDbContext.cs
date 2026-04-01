@@ -11,4 +11,7 @@ public class AppDbContext : DbContext
 
     public DbSet<PaintScheme> PaintSchemes => Set<PaintScheme>();
     public DbSet<Paint> Paints => Set<Paint>();
+    public DbSet<Step> Steps => Set<Step>();
+    public DbSet<User> Users => Set<User>();
+    public DbSet<InventoryItem> InventoryItems => Set<InventoryItem>();
 }

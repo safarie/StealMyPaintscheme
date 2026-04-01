@@ -1,0 +1,11 @@
+.api-section {
+  margin: 20px 0;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+button {
+  padding: 8px 16px;
+  cursor: pointer;
+}

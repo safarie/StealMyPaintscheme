@@ -10,7 +10,8 @@
         "dependencies": {
           "Microsoft.AspNetCore.OpenApi": "10.0.2",
           "Microsoft.EntityFrameworkCore.Design": "10.0.5",
-          "Npgsql.EntityFrameworkCore.PostgreSQL": "10.0.1"
+          "Npgsql.EntityFrameworkCore.PostgreSQL": "10.0.1",
+          "Scalar.AspNetCore": "2.13.18"
         },
         "runtime": {
           "StealMyPaintscheme.Api.dll": {}
@@ -428,6 +429,14 @@
           }
         }
       },
+      "Scalar.AspNetCore/2.13.18": {
+        "runtime": {
+          "lib/net10.0/Scalar.AspNetCore.dll": {
+            "assemblyVersion": "2.13.18.0",
+            "fileVersion": "2.13.18.0"
+          }
+        }
+      },
       "System.CodeDom/6.0.0": {
         "runtime": {
           "lib/net6.0/System.CodeDom.dll": {
@@ -636,6 +645,13 @@
       "sha512": "sha512-P6EwH0Q4xkaA264iNZDqCPhWt8pscfUGxXazDQg4noBfqjoOlk4hKWfvBjF9ZX3R/9JybRmmJfmxr2iBMj0EpA==",
       "path": "npgsql.entityframeworkcore.postgresql/10.0.1",
       "hashPath": "npgsql.entityframeworkcore.postgresql.10.0.1.nupkg.sha512"
+    },
+    "Scalar.AspNetCore/2.13.18": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-SOe5I8KspXwmcMbey+6G4drRWhCa/ON/ZjyVKfm5FpXvcsCmb9MfiVcKAiQ8UYV+ki3fAaqcCFc5ahzx/NTXOw==",
+      "path": "scalar.aspnetcore/2.13.18",
+      "hashPath": "scalar.aspnetcore.2.13.18.nupkg.sha512"
     },
     "System.CodeDom/6.0.0": {
       "type": "package",

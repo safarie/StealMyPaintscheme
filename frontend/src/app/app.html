@@ -1,9 +1,9 @@
 <h1>{{ title() }}</h1>
 
-@if (helloMessage()) {
-  <p>API says: {{ helloMessage() }}</p>
-} @else {
-  <p>Loading message from API...</p>
-}
+<div class="api-section">
+  <button (click)="fetchHelloWorld()">Haal Hello World op</button>
 
-<router-outlet />
+  @if (helloMessage()) {
+    <p>API resultaat: <strong>{{ helloMessage() }}</strong></p>
+  }
+</div>

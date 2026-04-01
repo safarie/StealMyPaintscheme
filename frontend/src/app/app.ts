@@ -1,29 +1,25 @@
 import { Component, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { RouterOutlet } from '@angular/router';
-
-interface HelloWorldResponse {
-  hello: string;
-}
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  standalone: true,
+  imports: [],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App {
   private readonly http = inject(HttpClient);
-  protected readonly title = signal('frontend');
+  protected readonly title = signal('Steal My Paint Scheme');
   protected readonly helloMessage = signal<string | null>(null);
 
-  constructor() {
-    this.http.get<HelloWorldResponse>('http://localhost:5166/helloworld')
+  protected fetchHelloWorld() {
+    this.http.get('http://localhost:5166/hello-world', { responseType: 'text' })
       .subscribe({
-        next: (data) => this.helloMessage.set(data.hello),
+        next: (data) => this.helloMessage.set(data),
         error: (err) => {
           console.error('Fout bij het ophalen van de hello world message:', err);
-          this.helloMessage.set('Kon de API niet bereiken');
+          this.helloMessage.set('Kon de API niet bereiken (check of de backend draait op poort 5166)');
         }
       });
   }

@@ -22,6 +22,32 @@ namespace StealMyPaintscheme.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("StealMyPaintscheme.Api.Models.InventoryItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("PaintId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PaintId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("InventoryItems");
+                });
+
             modelBuilder.Entity("StealMyPaintscheme.Api.Models.Paint", b =>
                 {
                     b.Property<int>("Id")
@@ -66,9 +92,117 @@ namespace StealMyPaintscheme.Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("PaintSchemes");
+                });
+
+            modelBuilder.Entity("StealMyPaintscheme.Api.Models.Step", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("PaintId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PaintSchemeId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Technique")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PaintId");
+
+                    b.HasIndex("PaintSchemeId");
+
+                    b.ToTable("Steps");
+                });
+
+            modelBuilder.Entity("StealMyPaintscheme.Api.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("StealMyPaintscheme.Api.Models.InventoryItem", b =>
+                {
+                    b.HasOne("StealMyPaintscheme.Api.Models.Paint", "Paint")
+                        .WithMany()
+                        .HasForeignKey("PaintId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("StealMyPaintscheme.Api.Models.User", null)
+                        .WithMany("Inventory")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Paint");
+                });
+
+            modelBuilder.Entity("StealMyPaintscheme.Api.Models.PaintScheme", b =>
+                {
+                    b.HasOne("StealMyPaintscheme.Api.Models.User", null)
+                        .WithMany("PaintSchemes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("StealMyPaintscheme.Api.Models.Step", b =>
+                {
+                    b.HasOne("StealMyPaintscheme.Api.Models.Paint", "Paint")
+                        .WithMany()
+                        .HasForeignKey("PaintId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("StealMyPaintscheme.Api.Models.PaintScheme", null)
+                        .WithMany("Steps")
+                        .HasForeignKey("PaintSchemeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Paint");
+                });
+
+            modelBuilder.Entity("StealMyPaintscheme.Api.Models.PaintScheme", b =>
+                {
+                    b.Navigation("Steps");
+                });
+
+            modelBuilder.Entity("StealMyPaintscheme.Api.Models.User", b =>
+                {
+                    b.Navigation("Inventory");
+
+                    b.Navigation("PaintSchemes");
                 });
 #pragma warning restore 612, 618
         }
