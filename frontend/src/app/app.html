@@ -1,33 +1,22 @@
-﻿<main>
+﻿<header>
   <h1>{{ title() }}</h1>
+  <nav>
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+    <a routerLink="/paint-schemes" routerLinkActive="active">Paint Schemes</a>
+    <a routerLink="/inventory" routerLinkActive="active">Inventory</a>
+    <a routerLink="/login" routerLinkActive="active">Login</a>
+    <a routerLink="/register" routerLinkActive="active">Register</a>
+  </nav>
+</header>
 
-  <div class="card">
-    <button (click)="fetchHelloWorld()">Test Hello World</button>
-  </div>
+<main>
+  <router-outlet></router-outlet>
+
+  <hr />
 
   @if (responseMessage()) {
     <div class="message-box">
       <strong>Response:</strong> {{ responseMessage() }}
     </div>
   }
-
-  <div class="forms-container">
-    <!-- User Form -->
-    <section class="form-section">
-      <h3>User aanmaken</h3>
-      <input [ngModel]="userName()" (ngModelChange)="userName.set($event)" placeholder="Username" />
-      <input [ngModel]="userEmail()" (ngModelChange)="userEmail.set($event)" placeholder="Email" />
-      <button (click)="createUser()">Maak User</button>
-    </section>
-
-    <!-- Paint Form -->
-    <section class="form-section">
-      <h3>Paint aanmaken</h3>
-      <input [ngModel]="paintName()" (ngModelChange)="paintName.set($event)" placeholder="Paint Name" />
-      <input [ngModel]="paintType()" (ngModelChange)="paintType.set($event)" placeholder="Type (Bijv. Layer)" />
-      <input [ngModel]="paintMaker()" (ngModelChange)="paintMaker.set($event)" placeholder="Maker (Bijv. Citadel)" />
-      <button (click)="createPaint()">Maak Paint</button>
-    </section>
-
-  </div>
 </main>
