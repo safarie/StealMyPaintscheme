@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("StealMyPaintscheme.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+77466341c172e56b0417cacdc3cef635927d6ed2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+13cba4abf525f49e73a67c7ebd05dcb55eaaa04c")]
 [assembly: System.Reflection.AssemblyProductAttribute("StealMyPaintscheme.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("StealMyPaintscheme.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
