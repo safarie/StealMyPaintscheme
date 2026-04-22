@@ -1,5 +1,8 @@
 ﻿<header>
-  <h1>{{ title() }}</h1>
+  <a routerLink="/" class="logo">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: white;"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+    <h1>{{ title() }}</h1>
+  </a>
   <nav>
     <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
     <a routerLink="/paint-schemes" routerLinkActive="active">Paint Schemes</a>

@@ -1,23 +1,65 @@
-<h2>Mijn Inventaris</h2>
-<p>Hier kun je bijhouden welke verf je al in huis hebt.</p>
-<div class="inventory-controls">
-  <button>Voeg verf toe</button>
+<div class="inventory-header">
+  <h2>Mijn Inventaris</h2>
+  <button class="primary" (click)="toggleForm()">
+    {{ showForm ? 'Annuleren' : 'Voeg verf toe' }}
+  </button>
 </div>
-<table>
-  <thead>
-    <tr>
-      <th>Naam</th>
-      <th>Type</th>
-      <th>Merk</th>
-      <th>Aantal</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Macragge Blue</td>
-      <td>Base</td>
-      <td>Citadel</td>
-      <td>1</td>
-    </tr>
-  </tbody>
-</table>
+
+<p>Hier kun je bijhouden welke verf je al in huis hebt.</p>
+
+<div class="form-container" *ngIf="showForm">
+  <form class="inventory-form">
+    <div class="form-group">
+      <label for="paint-name">Naam</label>
+      <input type="text" id="paint-name" placeholder="bijv. Macragge Blue" />
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="paint-type">Type</label>
+        <input type="text" id="paint-type" placeholder="bijv. Base" />
+      </div>
+
+      <div class="form-group">
+        <label for="paint-brand">Merk</label>
+        <input type="text" id="paint-brand" placeholder="bijv. Citadel" />
+      </div>
+
+      <div class="form-group">
+        <label for="paint-quantity">Aantal</label>
+        <input type="number" id="paint-quantity" min="1" value="1" />
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="primary">Opslaan</button>
+    </div>
+  </form>
+</div>
+
+<div class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>Naam</th>
+        <th>Type</th>
+        <th>Merk</th>
+        <th>Aantal</th>
+        <th class="actions-cell">Acties</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="inventory-row">
+        <td>
+          <span class="paint-name">Macragge Blue</span>
+        </td>
+        <td><span class="badge type-badge">Base</span></td>
+        <td><span class="brand-tag">Citadel</span></td>
+        <td class="quantity-cell">1</td>
+        <td class="actions-cell">
+          <button class="secondary edit-btn">Bewerk</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
