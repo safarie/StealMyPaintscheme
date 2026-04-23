@@ -1,14 +1,45 @@
-<h2>Paint Schemes</h2>
+<div class="form-container">
+  <form class="scheme-form" (submit)="onSubmit()">
+    <h2>Nieuw Verfschema</h2>
+    <p>Voeg hier een nieuw verfschema toe aan de collectie.</p>
+
+    <label for="scheme-name">Naam van het schema</label>
+    <input
+      type="text"
+      id="scheme-name"
+      name="name"
+      [(ngModel)]="name"
+      placeholder="bijv. Space Marine Blue"
+      required
+    />
+
+    <label for="scheme-description">Beschrijving</label>
+    <textarea
+      id="scheme-description"
+      name="description"
+      [(ngModel)]="description"
+      placeholder="Vertel iets over dit schema..."
+      rows="4"
+      required
+    ></textarea>
+
+    <button type="submit" class="primary">Schema Toevoegen</button>
+  </form>
+</div>
+
+<hr />
+
+<h2>Beschikbare Verfschema's</h2>
 <p>Hier vind je een overzicht van alle beschikbare verfschema's.</p>
 <div class="scheme-list">
   <div class="scheme-card">
     <h3>Space Marine Blue</h3>
     <p>Een klassiek schema voor je favoriete blauwe krijgers. Perfect voor Ultramarines en Crimson Fists.</p>
-    <button class="primary">Bekijk details</button>
+    <button class="secondary">Bekijk details</button>
   </div>
   <div class="scheme-card">
     <h3>Orc Green Skin</h3>
     <p>Hoe je de beste groene huid schildert. Ideaal voor Orks, Goblins en ander groenhuidig gespuis.</p>
-    <button class="primary">Bekijk details</button>
+    <button class="secondary">Bekijk details</button>
   </div>
 </div>

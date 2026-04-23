@@ -1,0 +1,93 @@
+.form-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.scheme-form {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.scheme-form h2 {
+  margin: 0;
+  color: #2c3e50;
+  text-align: center;
+}
+
+.scheme-form p {
+  text-align: center;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.scheme-form label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #4a5568;
+}
+
+.scheme-form input,
+.scheme-form textarea {
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #f8fafc;
+}
+
+.scheme-form input:focus,
+.scheme-form textarea:focus {
+  outline: none;
+  border-color: #3498db;
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+}
+
+hr {
+  margin: 2rem 0;
+  border: 0;
+  border-top: 1px solid #eee;
+}
+
+.scheme-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.scheme-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #eee;
+}
+
+.scheme-card h3 {
+  margin-top: 0;
+  color: #2c3e50;
+}
+
+button.secondary {
+  background-color: transparent;
+  border: 1px solid #3498db;
+  color: #3498db;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+button.secondary:hover {
+  background-color: #3498db;
+  color: white;
+}
