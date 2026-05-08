@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -13,6 +14,7 @@ import { HttpClient } from '@angular/common/http';
 export class LoginComponent {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
   private readonly baseUrl = 'http://localhost:5166';
 
   protected username = '';
@@ -30,7 +32,7 @@ export class LoginComponent {
     this.http.post(`${this.baseUrl}/login`, loginData).subscribe({
       next: (res: any) => {
         if (res.token) {
-          localStorage.setItem('auth_token', res.token);
+          this.authService.login(res.token);
           this.router.navigate(['/inventory']); // Of een andere startpagina
         }
       },

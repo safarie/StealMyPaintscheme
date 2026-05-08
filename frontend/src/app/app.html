@@ -6,9 +6,13 @@
   <nav>
     <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
     <a routerLink="/paint-schemes" routerLinkActive="active">Paint Schemes</a>
-    <a routerLink="/inventory" routerLinkActive="active">Inventory</a>
-    <a routerLink="/login" routerLinkActive="active">Login</a>
-    <a routerLink="/register" routerLinkActive="active">Register</a>
+    @if (authService.isLoggedIn()) {
+      <a routerLink="/inventory" routerLinkActive="active">Inventory</a>
+      <a href="#" (click)="$event.preventDefault(); logout()">Logout</a>
+    } @else {
+      <a routerLink="/login" routerLinkActive="active">Login</a>
+      <a routerLink="/register" routerLinkActive="active">Register</a>
+    }
   </nav>
 </header>
 

@@ -4,7 +4,9 @@
 
   <div class="actions">
     <button class="primary" routerLink="/paint-schemes">see the paint schemes</button>
-    <button class="secondary" routerLink="/register">Register new Account</button>
+    @if (!authService.isLoggedIn()) {
+      <button class="secondary" routerLink="/register">Register new Account</button>
+    }
   </div>
 
 

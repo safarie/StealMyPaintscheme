@@ -1,7 +1,8 @@
 ﻿import { Component, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -12,6 +13,8 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 })
 export class App {
   private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
+  protected readonly authService = inject(AuthService);
   private readonly baseUrl = 'http://localhost:5166';
 
   protected readonly title = signal('Steal My Paint Scheme');
@@ -104,5 +107,10 @@ export class App {
   private handleError(err: any) {
     console.error('API Fout:', err);
     this.responseMessage.set(`Fout: ${err.message || 'Onbekende fout'}. Is de backend gestart?`);
+  }
+
+  protected logout() {
+    this.authService.logout();
+    this.router.navigate(['/']);
   }
 }
