@@ -7,7 +7,7 @@ public class InventoryItem
     
     // Relation to Paint
     public int PaintId { get; set; }
-    public Paint Paint { get; set; } = null!;
+    public Paint? Paint { get; set; }
     
     // Relation to User
     public int UserId { get; set; }

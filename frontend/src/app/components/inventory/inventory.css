@@ -71,6 +71,13 @@
   margin-top: 0.5rem;
 }
 
+.button-container {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+
 .edit-btn {
   padding: 0.3rem 0.6rem;
   font-size: 0.9rem;

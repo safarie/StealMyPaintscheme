@@ -1,4 +1,5 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -61,6 +62,37 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    
+    // Automatisch de frontend starten in een nieuw terminalvenster
+    try
+    {
+        // Bepaal het pad naar de frontend map (relatief aan de backend API map)
+        var frontendPath = Path.GetFullPath(Path.Combine(app.Environment.ContentRootPath, "..", "..", "..", "frontend"));
+        
+        if (Directory.Exists(frontendPath))
+        {
+            Console.WriteLine($"[INFO] Starten van frontend in: {frontendPath}");
+            
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = "cmd.exe",
+                Arguments = "/c npm start",
+                WorkingDirectory = frontendPath,
+                UseShellExecute = true, // Opent een nieuw terminalvenster
+                CreateNoWindow = false
+            };
+            
+            Process.Start(startInfo);
+        }
+        else
+        {
+            Console.WriteLine($"[WAARSCHUWING] Frontend map niet gevonden op: {frontendPath}");
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[FOUT] Kon de frontend niet automatisch starten: {ex.Message}");
+    }
 }
 
 app.UseHttpsRedirection();
@@ -116,15 +148,36 @@ app.MapGet("/users", async (AppDbContext db) =>
     await db.Users.ToListAsync()).WithName("GetUsers").RequireAuthorization();
 
 // Paints
-app.MapPost("/paints", async (AppDbContext db, Paint paint) =>
+app.MapPost("/paints", async (AppDbContext db, Paint paint, ClaimsPrincipal userPrincipal) =>
 {
+    var userIdClaim = userPrincipal.FindFirst("userId")?.Value;
+    if (userIdClaim == null || !int.TryParse(userIdClaim, out var userId))
+    {
+        return Results.Unauthorized();
+    }
+
+    var existingPaint = await db.Paints.FirstOrDefaultAsync(p => p.Name == paint.Name && p.Maker == paint.Maker && p.UserId == userId);
+    if (existingPaint != null)
+    {
+        return Results.Ok(existingPaint);
+    }
+    
+    paint.UserId = userId;
     db.Paints.Add(paint);
     await db.SaveChangesAsync();
     return Results.Created($"/paints/{paint.Id}", paint);
 }).WithName("CreatePaint").RequireAuthorization();
 
-app.MapGet("/paints", async (AppDbContext db) =>
-    await db.Paints.ToListAsync()).WithName("GetPaints").RequireAuthorization();
+app.MapGet("/paints", async (AppDbContext db, ClaimsPrincipal userPrincipal) =>
+{
+    var userIdClaim = userPrincipal.FindFirst("userId")?.Value;
+    if (userIdClaim == null || !int.TryParse(userIdClaim, out var userId))
+    {
+        return Results.Unauthorized();
+    }
+
+    return await db.Paints.Where(p => p.UserId == userId).ToListAsync();
+}).WithName("GetPaints").RequireAuthorization();
 
 // PaintSchemes
 app.MapPost("/paint-schemes", async (AppDbContext db, PaintScheme paintScheme) =>
@@ -147,11 +200,44 @@ app.MapPost("/steps", async (AppDbContext db, Step step) =>
 }).WithName("CreateStep").RequireAuthorization();
 
 // InventoryItems
-app.MapPost("/inventory-items", async (AppDbContext db, InventoryItem inventoryItem) =>
+app.MapPost("/inventory-items", async (AppDbContext db, InventoryItem inventoryItem, ClaimsPrincipal userPrincipal) =>
 {
+    var userIdClaim = userPrincipal.FindFirst("userId")?.Value;
+    if (userIdClaim == null || !int.TryParse(userIdClaim, out var userId))
+    {
+        return Results.Unauthorized();
+    }
+    
+    // Check if the user already has this paint in their inventory
+    var existingItem = await db.InventoryItems
+        .FirstOrDefaultAsync(i => i.UserId == userId && i.PaintId == inventoryItem.PaintId);
+
+    if (existingItem != null)
+    {
+        existingItem.Quantity += inventoryItem.Quantity;
+        await db.SaveChangesAsync();
+        return Results.Ok(existingItem);
+    }
+    
+    inventoryItem.UserId = userId;
     db.InventoryItems.Add(inventoryItem);
     await db.SaveChangesAsync();
     return Results.Created($"/inventory-items/{inventoryItem.Id}", inventoryItem);
 }).WithName("CreateInventoryItem").RequireAuthorization();
+
+app.MapGet("/inventory-items", async (AppDbContext db, ClaimsPrincipal userPrincipal) =>
+{
+    var userIdClaim = userPrincipal.FindFirst("userId")?.Value;
+    if (userIdClaim == null || !int.TryParse(userIdClaim, out var userId))
+    {
+        return Results.Unauthorized();
+    }
+
+    var items = await db.InventoryItems
+        .Include(i => i.Paint)
+        .Where(i => i.UserId == userId)
+        .ToListAsync();
+    return Results.Ok(items);
+}).WithName("GetInventoryItems").RequireAuthorization();
 
 app.Run();

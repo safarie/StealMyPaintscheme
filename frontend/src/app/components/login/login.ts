@@ -33,7 +33,7 @@ export class LoginComponent {
       next: (res: any) => {
         if (res.token) {
           this.authService.login(res.token);
-          this.router.navigate(['/inventory']); // Of een andere startpagina
+          this.router.navigate(['/paint-schemes']);
         }
       },
       error: (err) => {
