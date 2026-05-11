@@ -261,4 +261,37 @@ app.MapGet("/inventory-items", async (AppDbContext db, ClaimsPrincipal userPrinc
     return Results.Ok(items);
 }).WithName("GetInventoryItems").RequireAuthorization();
 
+app.MapDelete("/inventory-items/{id}", async (AppDbContext db, int id, ClaimsPrincipal userPrincipal) =>
+{
+    var userIdClaim = userPrincipal.FindFirst("userId")?.Value;
+    if (userIdClaim == null || !int.TryParse(userIdClaim, out var userId))
+    {
+        return Results.Unauthorized();
+    }
+
+    var item = await db.InventoryItems.FirstOrDefaultAsync(i => i.Id == id && i.UserId == userId);
+    if (item == null) return Results.NotFound();
+
+    db.InventoryItems.Remove(item);
+    await db.SaveChangesAsync();
+    return Results.NoContent();
+}).WithName("DeleteInventoryItem").RequireAuthorization();
+
+app.MapPut("/inventory-items/{id}", async (AppDbContext db, int id, InventoryItem updatedItem, ClaimsPrincipal userPrincipal) =>
+{
+    var userIdClaim = userPrincipal.FindFirst("userId")?.Value;
+    if (userIdClaim == null || !int.TryParse(userIdClaim, out var userId))
+    {
+        return Results.Unauthorized();
+    }
+
+    var item = await db.InventoryItems.FirstOrDefaultAsync(i => i.Id == id && i.UserId == userId);
+    if (item == null) return Results.NotFound();
+
+    item.Quantity = updatedItem.Quantity;
+    
+    await db.SaveChangesAsync();
+    return Results.Ok(item);
+}).WithName("UpdateInventoryItem").RequireAuthorization();
+
 app.Run();

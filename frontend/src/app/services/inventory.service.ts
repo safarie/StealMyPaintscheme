@@ -43,4 +43,12 @@ export class InventoryService {
   addInventoryItem(item: InventoryItem): Observable<InventoryItem> {
     return this.http.post<InventoryItem>(`${this.baseUrl}/inventory-items`, item, { headers: this.getHeaders() });
   }
+
+  updateInventoryItem(id: number, item: InventoryItem): Observable<InventoryItem> {
+    return this.http.put<InventoryItem>(`${this.baseUrl}/inventory-items/${id}`, item, { headers: this.getHeaders() });
+  }
+
+  deleteInventoryItem(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/inventory-items/${id}`, { headers: this.getHeaders() });
+  }
 }

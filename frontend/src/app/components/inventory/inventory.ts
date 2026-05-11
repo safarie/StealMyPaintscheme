@@ -17,6 +17,8 @@ export class InventoryComponent implements OnInit {
   showForm = false;
   errorMessage = signal<string | null>(null);
   successMessage = signal<string | null>(null);
+  editingItemId = signal<number | null>(null);
+  editQuantity = 0;
 
   // Form fields
   newName = '';
@@ -33,6 +35,56 @@ export class InventoryComponent implements OnInit {
       next: (items) => this.inventoryItems.set(items),
       error: (err) => console.error('Error loading inventory:', err)
     });
+  }
+
+  onDelete(id: number | undefined) {
+    if (id === undefined) return;
+
+    if (confirm('Are you sure you want to delete this paint from your inventory?')) {
+      this.inventoryService.deleteInventoryItem(id).subscribe({
+        next: () => {
+          this.loadInventory();
+          this.successMessage.set('Paint removed from inventory.');
+        },
+        error: (err) => {
+          console.error('Error deleting inventory item:', err);
+          this.errorMessage.set('Error removing paint from inventory.');
+        }
+      });
+    }
+  }
+
+  onEdit(item: InventoryItem) {
+    if (item.id === undefined) return;
+    this.editingItemId.set(item.id);
+    this.editQuantity = item.quantity;
+  }
+
+  onUpdate() {
+    const id = this.editingItemId();
+    if (id === null) return;
+
+    const updatedItem: InventoryItem = {
+      id: id,
+      quantity: this.editQuantity,
+      paintId: 0 // Will be ignored by the backend for now, but required by interface
+    };
+
+    this.inventoryService.updateInventoryItem(id, updatedItem).subscribe({
+      next: () => {
+        this.loadInventory();
+        this.editingItemId.set(null);
+        this.successMessage.set('Inventory updated successfully.');
+      },
+      error: (err) => {
+        console.error('Error updating inventory item:', err);
+        this.errorMessage.set('Error updating inventory.');
+      }
+    });
+  }
+
+  cancelEdit() {
+    this.editingItemId.set(null);
   }
 
   toggleForm() {

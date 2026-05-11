@@ -63,7 +63,7 @@
         <th>Type</th>
         <th>Brand</th>
         <th>Quantity</th>
-        <th class="actions-cell">Actions</th>
+        <th class="actions-cell"></th>
       </tr>
     </thead>
     <tbody>
@@ -72,9 +72,29 @@
           <td>{{ item.paint?.name }}</td>
           <td>{{ item.paint?.type }}</td>
           <td>{{ item.paint?.maker }}</td>
-          <td>{{ item.quantity }}</td>
+          <td>
+            @if (editingItemId() === item.id) {
+              <input type="number" [(ngModel)]="editQuantity" min="1" class="w-20 p-1 border rounded" />
+            } @else {
+              {{ item.quantity }}
+            }
+          </td>
           <td class="actions-cell">
-            <!-- Add delete/edit actions later if needed -->
+            @if (editingItemId() === item.id) {
+              <button class="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-3 rounded text-sm mr-2" (click)="onUpdate()">
+                Save
+              </button>
+              <button class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded text-sm" (click)="cancelEdit()">
+                Cancel
+              </button>
+            } @else {
+              <button class="bg-transparent hover:bg-blue-600 text-blue-600 font-semibold hover:text-white py-1 px-3 border border-blue-600 hover:border-transparent rounded text-sm mr-2" (click)="onEdit(item)">
+                Edit
+              </button>
+              <button class="bg-transparent hover:bg-red-600 text-red-600 font-semibold hover:text-white py-1 px-3 border border-red-600 hover:border-transparent rounded text-sm" (click)="onDelete(item.id)">
+                Delete
+              </button>
+            }
           </td>
         </tr>
       } @empty {
