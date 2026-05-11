@@ -13,7 +13,7 @@ namespace StealMyPaintscheme.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     [Migration("20260401174811_models")]
-    partial class models
+    partial class Models
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

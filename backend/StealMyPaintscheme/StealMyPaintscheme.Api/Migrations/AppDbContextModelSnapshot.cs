@@ -45,7 +45,7 @@ namespace StealMyPaintscheme.Api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("InventoryItems", (string)null);
+                    b.ToTable("InventoryItems");
                 });
 
             modelBuilder.Entity("StealMyPaintscheme.Api.Models.Paint", b =>
@@ -68,9 +68,12 @@ namespace StealMyPaintscheme.Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Paints", (string)null);
+                    b.ToTable("Paints");
                 });
 
             modelBuilder.Entity("StealMyPaintscheme.Api.Models.PaintScheme", b =>
@@ -99,7 +102,7 @@ namespace StealMyPaintscheme.Api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PaintSchemes", (string)null);
+                    b.ToTable("PaintSchemes");
                 });
 
             modelBuilder.Entity("StealMyPaintscheme.Api.Models.Step", b =>
@@ -110,13 +113,21 @@ namespace StealMyPaintscheme.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("PaintId")
+                    b.Property<string>("Colour")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("PaintId")
                         .HasColumnType("integer");
 
                     b.Property<int>("PaintSchemeId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Technique")
+                    b.Property<string>("PaintingTechnique")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Where")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -126,7 +137,7 @@ namespace StealMyPaintscheme.Api.Migrations
 
                     b.HasIndex("PaintSchemeId");
 
-                    b.ToTable("Steps", (string)null);
+                    b.ToTable("Steps");
                 });
 
             modelBuilder.Entity("StealMyPaintscheme.Api.Models.User", b =>
@@ -151,7 +162,7 @@ namespace StealMyPaintscheme.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("StealMyPaintscheme.Api.Models.InventoryItem", b =>
@@ -184,9 +195,7 @@ namespace StealMyPaintscheme.Api.Migrations
                 {
                     b.HasOne("StealMyPaintscheme.Api.Models.Paint", "Paint")
                         .WithMany()
-                        .HasForeignKey("PaintId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PaintId");
 
                     b.HasOne("StealMyPaintscheme.Api.Models.PaintScheme", null)
                         .WithMany("Steps")

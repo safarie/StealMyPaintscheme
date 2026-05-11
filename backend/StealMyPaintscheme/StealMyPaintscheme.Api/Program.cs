@@ -176,20 +176,41 @@ app.MapGet("/paints", async (AppDbContext db, ClaimsPrincipal userPrincipal) =>
         return Results.Unauthorized();
     }
 
-    return await db.Paints.Where(p => p.UserId == userId).ToListAsync();
+    var paints = await db.Paints.Where(p => p.UserId == userId).ToListAsync();
+    return Results.Ok(paints);
 }).WithName("GetPaints").RequireAuthorization();
 
 // PaintSchemes
-app.MapPost("/paint-schemes", async (AppDbContext db, PaintScheme paintScheme) =>
+app.MapPost("/paint-schemes", async (AppDbContext db, PaintScheme paintScheme, ClaimsPrincipal userPrincipal) =>
 {
+    var userIdClaim = userPrincipal.FindFirst("userId")?.Value;
+    if (userIdClaim == null || !int.TryParse(userIdClaim, out var userId))
+    {
+        return Results.Unauthorized();
+    }
+
+    paintScheme.UserId = userId;
     paintScheme.CreatedAt = DateTime.UtcNow;
     db.PaintSchemes.Add(paintScheme);
     await db.SaveChangesAsync();
     return Results.Created($"/paint-schemes/{paintScheme.Id}", paintScheme);
 }).WithName("CreatePaintScheme").RequireAuthorization();
 
-app.MapGet("/paint-schemes", async (AppDbContext db) =>
-    await db.PaintSchemes.Include(ps => ps.Steps).ThenInclude(s => s.Paint).ToListAsync()).WithName("GetPaintSchemes").RequireAuthorization();
+app.MapGet("/paint-schemes", async (AppDbContext db, ClaimsPrincipal userPrincipal) =>
+{
+    var userIdClaim = userPrincipal.FindFirst("userId")?.Value;
+    if (userIdClaim == null || !int.TryParse(userIdClaim, out var userId))
+    {
+        return Results.Unauthorized();
+    }
+
+    var schemes = await db.PaintSchemes
+        .Include(ps => ps.Steps)
+        .ThenInclude(s => s.Paint)
+        .Where(ps => ps.UserId == userId)
+        .ToListAsync();
+    return Results.Ok(schemes);
+}).WithName("GetPaintSchemes").RequireAuthorization();
 
 // Steps
 app.MapPost("/steps", async (AppDbContext db, Step step) =>

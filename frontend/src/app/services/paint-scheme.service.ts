@@ -1,0 +1,43 @@
+﻿import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+export interface Step {
+  id?: number;
+  where: string;
+  colour: string;
+  paintingTechnique: string;
+  paintId?: number;
+}
+
+export interface PaintScheme {
+  id?: number;
+  name: string;
+  description?: string;
+  userId?: number;
+  createdAt?: string;
+  steps: Step[];
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class PaintSchemeService {
+  private readonly http = inject(HttpClient);
+  private readonly baseUrl = 'http://localhost:5166';
+
+  private getHeaders() {
+    const token = localStorage.getItem('auth_token');
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+  }
+
+  getPaintSchemes(): Observable<PaintScheme[]> {
+    return this.http.get<PaintScheme[]>(`${this.baseUrl}/paint-schemes`, { headers: this.getHeaders() });
+  }
+
+  addPaintScheme(scheme: PaintScheme): Observable<PaintScheme> {
+    return this.http.post<PaintScheme>(`${this.baseUrl}/paint-schemes`, scheme, { headers: this.getHeaders() });
+  }
+}
