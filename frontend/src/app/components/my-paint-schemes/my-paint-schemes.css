@@ -171,6 +171,19 @@ hr {
   font-weight: bold;
 }
 
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.tag {
+  color: #7f8c8d;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
 .scheme-card h3 {
   margin: 0;
   color: #2c3e50;

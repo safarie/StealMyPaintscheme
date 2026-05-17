@@ -11,6 +11,7 @@ public class PaintScheme
     
     [Required]
     public string Description { get; set; } = string.Empty;
+    public List<string>? Tags { get; set; } = [];
     public List<Step> Steps { get; set; } = [];
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     

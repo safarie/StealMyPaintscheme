@@ -23,6 +23,7 @@ export class MyPaintSchemesComponent implements OnInit {
 
   name = '';
   description = '';
+  tagsInput = '';
   steps: Step[] = [];
 
   ngOnInit() {
@@ -71,6 +72,7 @@ export class MyPaintSchemesComponent implements OnInit {
     const newScheme: PaintScheme = {
       name: this.name,
       description: this.description,
+      tags: this.tagsInput ? this.tagsInput.split(',').map(t => t.trim()).filter(t => t !== '') : [],
       steps: this.steps
     };
 
@@ -79,6 +81,7 @@ export class MyPaintSchemesComponent implements OnInit {
         this.loadSchemes();
         this.name = '';
         this.description = '';
+        this.tagsInput = '';
         this.steps = [];
       },
       error: (err) => console.error('Error adding scheme:', err)

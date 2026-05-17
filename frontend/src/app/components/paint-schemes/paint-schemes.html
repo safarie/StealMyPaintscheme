@@ -3,8 +3,18 @@
     <h2>All Paint Schemes</h2>
   </div>
 
+  <div class="search-container">
+    <input
+      type="text"
+      [ngModel]="searchTerm()"
+      (ngModelChange)="searchTerm.set($event)"
+      placeholder="Search by name, description or tag..."
+      class="search-input"
+    />
+  </div>
+
   <div class="scheme-list">
-    @for (scheme of paintSchemes(); track scheme.id) {
+    @for (scheme of filteredSchemes(); track scheme.id) {
       <div class="scheme-card" [class.own-scheme]="scheme.userId === currentUserId()">
         <div class="scheme-header">
           <h3>{{ scheme.name }}</h3>
@@ -12,6 +22,13 @@
             <span class="badge">Yours</span>
           }
         </div>
+        @if (scheme.tags && scheme.tags.length > 0) {
+          <div class="tag-list">
+            @for (tag of scheme.tags; track tag) {
+              <span class="tag">#{{ tag }}</span>
+            }
+          </div>
+        }
         <p>{{ scheme.description }}</p>
         <button class="secondary">View details</button>
       </div>
