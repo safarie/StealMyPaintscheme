@@ -29,9 +29,11 @@ export class PaintSchemeService {
 
   private getHeaders() {
     const token = localStorage.getItem('auth_token');
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
+    const headers: { [key: string]: string } = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    return new HttpHeaders(headers);
   }
 
   getPaintSchemes(): Observable<PaintScheme[]> {

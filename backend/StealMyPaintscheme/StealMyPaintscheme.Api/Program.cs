@@ -220,11 +220,15 @@ app.MapGet("/paint-schemes", async (AppDbContext db, ClaimsPrincipal userPrincip
     var schemes = await db.PaintSchemes
         .Include(ps => ps.Steps)
         .ThenInclude(s => s.Paint)
-        .OrderBy(ps => ps.UserId == currentUserId)
-        .ThenByDescending(ps => ps.CreatedAt)
         .ToListAsync();
-    return Results.Ok(schemes);
-}).WithName("GetPaintSchemes").RequireAuthorization();
+
+    var orderedSchemes = schemes
+        .OrderByDescending(ps => ps.UserId == currentUserId)
+        .ThenByDescending(ps => ps.CreatedAt)
+        .ToList();
+
+    return Results.Ok(orderedSchemes);
+}).WithName("GetPaintSchemes");
 
 app.MapDelete("/paint-schemes/{id}", async (AppDbContext db, int id, ClaimsPrincipal userPrincipal, ILogger<Program> logger) =>
 {
