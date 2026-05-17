@@ -189,25 +189,39 @@ app.MapPost("/paint-schemes", async (AppDbContext db, PaintScheme paintScheme, C
         return Results.Unauthorized();
     }
 
-    paintScheme.UserId = userId;
-    paintScheme.CreatedAt = DateTime.UtcNow;
-    db.PaintSchemes.Add(paintScheme);
-    await db.SaveChangesAsync();
-    return Results.Created($"/paint-schemes/{paintScheme.Id}", paintScheme);
+    try 
+    {
+        paintScheme.UserId = userId;
+        paintScheme.CreatedAt = DateTime.UtcNow;
+        
+        // Zorg ervoor dat de steps ook gekoppeld zijn aan de juiste userId of andere velden indien nodig
+        // In dit geval worden ze als part of the aggregate opgeslagen.
+        
+        db.PaintSchemes.Add(paintScheme);
+        await db.SaveChangesAsync();
+        return Results.Created($"/paint-schemes/{paintScheme.Id}", paintScheme);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[ERROR] Error saving paint scheme: {ex.Message}");
+        if (ex.InnerException != null)
+        {
+            Console.WriteLine($"[ERROR] Inner exception: {ex.InnerException.Message}");
+        }
+        return Results.Problem("Er is een fout opgetreden bij het opslaan van het verfschema.");
+    }
 }).WithName("CreatePaintScheme").RequireAuthorization();
 
 app.MapGet("/paint-schemes", async (AppDbContext db, ClaimsPrincipal userPrincipal) =>
 {
     var userIdClaim = userPrincipal.FindFirst("userId")?.Value;
-    if (userIdClaim == null || !int.TryParse(userIdClaim, out var userId))
-    {
-        return Results.Unauthorized();
-    }
+    int? currentUserId = int.TryParse(userIdClaim, out var id) ? id : null;
 
     var schemes = await db.PaintSchemes
         .Include(ps => ps.Steps)
         .ThenInclude(s => s.Paint)
-        .Where(ps => ps.UserId == userId)
+        .OrderBy(ps => ps.UserId == currentUserId)
+        .ThenByDescending(ps => ps.CreatedAt)
         .ToListAsync();
     return Results.Ok(schemes);
 }).WithName("GetPaintSchemes").RequireAuthorization();

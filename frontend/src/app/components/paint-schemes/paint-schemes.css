@@ -111,6 +111,33 @@ hr {
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
   margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+.section-banner {
+  background-color: #f8fafc;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border-left: 5px solid #64748b;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+}
+
+.section-banner h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.section-banner.own-banner {
+  background-color: #f0f7ff;
+  border-left-color: #3498db;
+}
+
+.section-banner.own-banner h2 {
+  color: #2980b9;
 }
 
 .scheme-card {
@@ -119,24 +146,61 @@ hr {
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   border: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+}
+
+.scheme-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.scheme-card.own-scheme {
+  border-left: 4px solid #3498db;
+  background-color: #f0f7ff;
+}
+
+.badge {
+  background-color: #3498db;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: bold;
 }
 
 .scheme-card h3 {
-  margin-top: 0;
+  margin: 0;
   color: #2c3e50;
 }
 
-button.secondary {
+button.secondary,
+button.success {
   background-color: transparent;
-  border: 1px solid #3498db;
-  color: #3498db;
   padding: 0.5rem 1rem;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s;
 }
 
+button.secondary {
+  border: 1px solid #3498db;
+  color: #3498db;
+}
+
 button.secondary:hover {
   background-color: #3498db;
+  color: white;
+}
+
+button.success {
+  border: 1px solid #27ae60;
+  color: #27ae60;
+}
+
+button.success:hover {
+  background-color: #27ae60;
   color: white;
 }
