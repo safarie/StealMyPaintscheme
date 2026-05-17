@@ -1,113 +1,22 @@
-<div class="form-container">
-  <form class="scheme-form" (submit)="onSubmit($event)">
-    <h2>New Paint Scheme</h2>
-    <p>Add a new paint scheme to the collection.</p>
-
-    <div class="form-group">
-      <label for="scheme-name">Scheme Name</label>
-      <input
-        type="text"
-        id="scheme-name"
-        name="name"
-        [(ngModel)]="name"
-        placeholder="e.g. Space Marine Blue"
-        required
-      />
-    </div>
-
-    <div class="form-group">
-      <label for="scheme-description">Description</label>
-      <textarea
-        id="scheme-description"
-        name="description"
-        [(ngModel)]="description"
-        placeholder="Describe your scheme..."
-        required
-      ></textarea>
-    </div>
-
-    <div class="steps-section">
-      <h3>Steps</h3>
-      <div class="steps-container">
-        @for (step of steps; track $index) {
-          <div class="step-box relative">
-            <button
-              type="button"
-              (click)="removeStep($index)"
-              class="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm transition-colors"
-              title="Remove Step"
-            >
-              ×
-            </button>
-            <h4>Step {{ $index + 1 }}</h4>
-            <div class="step-inputs">
-              <div class="form-group">
-                <label>Where</label>
-                <input type="text" [(ngModel)]="step.where" [name]="'where' + $index" placeholder="e.g. Armor" required />
-              </div>
-              <div class="form-group">
-                <label>Colour</label>
-                <input type="text" [(ngModel)]="step.colour" [name]="'colour' + $index" placeholder="e.g. Blue" required />
-              </div>
-              <div class="form-group">
-                <label>Painting Technique</label>
-                <input type="text" [(ngModel)]="step.paintingTechnique" [name]="'tech' + $index" placeholder="e.g. Basecoat" required />
-              </div>
-            </div>
-          </div>
-        }
-      </div>
-
-      <button type="button" (click)="addStep()" class="secondary">Add Step</button>
-    </div>
-
-    <div class="form-actions" style="margin-top: 20px;">
-      <button type="submit" class="success">Save Scheme</button>
-    </div>
-  </form>
-</div>
-
-<hr />
-
-
-
 <div class="schemes-container">
-  @if (otherSchemes().length > 0) {
-    <div class="section-banner">
-      <h2>Other Paint Schemes</h2>
-    </div>
-    <div class="scheme-list">
-      @for (scheme of otherSchemes(); track scheme.id) {
-        <div class="scheme-card">
-          <div class="scheme-header">
-            <h3>{{ scheme.name }}</h3>
-          </div>
-          <p>{{ scheme.description }}</p>
-          <button class="secondary">View details</button>
-        </div>
-      }
-    </div>
-  }
+  <div class="section-banner">
+    <h2>All Paint Schemes</h2>
+  </div>
 
-  @if (ownSchemes().length > 0) {
-    <div class="section-banner own-banner">
-      <h2>Your Own Paint Schemes</h2>
-    </div>
-    <div class="scheme-list">
-      @for (scheme of ownSchemes(); track scheme.id) {
-        <div class="scheme-card own-scheme">
-          <div class="scheme-header">
-            <h3>{{ scheme.name }}</h3>
+  <div class="scheme-list">
+    @for (scheme of paintSchemes(); track scheme.id) {
+      <div class="scheme-card" [class.own-scheme]="scheme.userId === currentUserId()">
+        <div class="scheme-header">
+          <h3>{{ scheme.name }}</h3>
+          @if (scheme.userId === currentUserId()) {
             <span class="badge">Yours</span>
-          </div>
-          <p>{{ scheme.description }}</p>
-          <button class="secondary">View details</button>
+          }
         </div>
-      }
-    </div>
-  }
-
-  @if (paintSchemes().length === 0) {
-    <p>No paint schemes found.</p>
-  }
+        <p>{{ scheme.description }}</p>
+        <button class="secondary">View details</button>
+      </div>
+    } @empty {
+      <p>No paint schemes found.</p>
+    }
+  </div>
 </div>
