@@ -16,6 +16,7 @@ export class MyPaintSchemesComponent implements OnInit {
 
   paintSchemes = signal<PaintScheme[]>([]);
   currentUserId = this.authService.userId;
+  selectedScheme = signal<PaintScheme | null>(null);
 
   ownSchemes = computed(() =>
     this.paintSchemes().filter(s => s.userId === this.currentUserId())
@@ -86,5 +87,26 @@ export class MyPaintSchemesComponent implements OnInit {
       },
       error: (err) => console.error('Error adding scheme:', err)
     });
+  }
+
+  deleteScheme(id: number | undefined) {
+    if (!id) return;
+
+    if (confirm('Weet je zeker dat je dit verfschema wilt verwijderen?')) {
+      this.paintSchemeService.deletePaintScheme(id).subscribe({
+        next: () => {
+          this.loadSchemes();
+        },
+        error: (err) => console.error('Error deleting scheme:', err)
+      });
+    }
+  }
+
+  viewDetails(scheme: PaintScheme) {
+    this.selectedScheme.set(scheme);
+  }
+
+  closeDetails() {
+    this.selectedScheme.set(null);
   }
 }

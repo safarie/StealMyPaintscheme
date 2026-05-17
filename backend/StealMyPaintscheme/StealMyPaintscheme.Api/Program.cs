@@ -226,6 +226,34 @@ app.MapGet("/paint-schemes", async (AppDbContext db, ClaimsPrincipal userPrincip
     return Results.Ok(schemes);
 }).WithName("GetPaintSchemes").RequireAuthorization();
 
+app.MapDelete("/paint-schemes/{id}", async (AppDbContext db, int id, ClaimsPrincipal userPrincipal, ILogger<Program> logger) =>
+{
+    var userIdClaim = userPrincipal.FindFirst("userId")?.Value;
+    if (userIdClaim == null || !int.TryParse(userIdClaim, out var userId))
+    {
+        logger.LogWarning("DeletePaintScheme: Geen userId claim gevonden voor id {Id}", id);
+        return Results.Unauthorized();
+    }
+
+    logger.LogInformation("DeletePaintScheme: Poging om schema {Id} te verwijderen voor gebruiker {UserId}", id, userId);
+
+    var scheme = await db.PaintSchemes
+        .Include(ps => ps.Steps)
+        .FirstOrDefaultAsync(ps => ps.Id == id && ps.UserId == userId);
+        
+    if (scheme == null)
+    {
+        var exists = await db.PaintSchemes.AnyAsync(ps => ps.Id == id);
+        logger.LogWarning("DeletePaintScheme: Schema {Id} niet gevonden voor gebruiker {UserId}. Bestaat het schema überhaupt? {Exists}", id, userId, exists);
+        return Results.NotFound();
+    }
+
+    db.PaintSchemes.Remove(scheme);
+    await db.SaveChangesAsync();
+    logger.LogInformation("DeletePaintScheme: Schema {Id} succesvol verwijderd", id);
+    return Results.NoContent();
+}).WithName("DeletePaintScheme").RequireAuthorization();
+
 // Steps
 app.MapPost("/steps", async (AppDbContext db, Step step) =>
 {

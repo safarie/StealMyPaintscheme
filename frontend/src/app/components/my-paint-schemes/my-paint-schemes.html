@@ -10,7 +10,7 @@
         id="scheme-name"
         name="name"
         [(ngModel)]="name"
-        placeholder="e.g. Space Marine Blue"
+        placeholder="e.g. Ultramarines"
         required
       />
     </div>
@@ -33,7 +33,7 @@
         id="scheme-tags"
         name="tags"
         [(ngModel)]="tagsInput"
-        placeholder="e.g. Space Marines, Ultramarines, Blue"
+        placeholder="e.g. Space Marines, Necrons, Vehicles"
       />
     </div>
 
@@ -100,10 +100,63 @@
           </div>
         }
         <p>{{ scheme.description }}</p>
-        <button class="secondary">View details</button>
+        <div class="card-actions">
+          <button class="secondary" (click)="viewDetails(scheme)">View details</button>
+          <button class="danger-outline" (click)="deleteScheme(scheme.id)">Delete</button>
+        </div>
       </div>
     } @empty {
       <p>You haven't added any paint schemes yet.</p>
     }
   </div>
+
+  @if (selectedScheme(); as scheme) {
+    <div class="modal-backdrop" (click)="closeDetails()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>{{ scheme.name }}</h2>
+          <button class="close-btn" (click)="closeDetails()">×</button>
+        </div>
+
+        @if (scheme.tags && scheme.tags.length > 0) {
+          <div class="tag-list" style="margin-bottom: 1rem;">
+            @for (tag of scheme.tags; track tag) {
+              <span class="tag">#{{ tag }}</span>
+            }
+          </div>
+        }
+
+        <p class="scheme-desc">{{ scheme.description }}</p>
+
+        <div class="details-section">
+          <h3>Steps</h3>
+          <div class="steps-grid">
+            @for (step of scheme.steps; track $index) {
+              <div class="step-detail-card">
+                <div class="step-number">{{ $index + 1 }}</div>
+                <div class="step-info">
+                  <div class="info-item">
+                    <span class="label">Where:</span>
+                    <span class="value">{{ step.where }}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="label">Colour:</span>
+                    <span class="value">{{ step.colour }}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="label">Technique:</span>
+                    <span class="value">{{ step.paintingTechnique }}</span>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="secondary" (click)="closeDetails()">Close</button>
+        </div>
+      </div>
+    </div>
+  }
 </div>

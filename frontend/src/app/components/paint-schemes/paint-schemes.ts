@@ -17,6 +17,7 @@ export class PaintSchemesComponent implements OnInit {
   paintSchemes = signal<PaintScheme[]>([]);
   currentUserId = this.authService.userId;
   searchTerm = signal<string>('');
+  selectedScheme = signal<PaintScheme | null>(null);
 
   filteredSchemes = computed(() => {
     const term = this.searchTerm().toLowerCase();
@@ -40,5 +41,13 @@ export class PaintSchemesComponent implements OnInit {
       next: (schemes) => this.paintSchemes.set(schemes),
       error: (err) => console.error('Error loading schemes:', err)
     });
+  }
+
+  viewDetails(scheme: PaintScheme) {
+    this.selectedScheme.set(scheme);
+  }
+
+  closeDetails() {
+    this.selectedScheme.set(null);
   }
 }

@@ -41,4 +41,8 @@ export class PaintSchemeService {
   addPaintScheme(scheme: PaintScheme): Observable<PaintScheme> {
     return this.http.post<PaintScheme>(`${this.baseUrl}/paint-schemes`, scheme, { headers: this.getHeaders() });
   }
+
+  deletePaintScheme(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/paint-schemes/${id}`, { headers: this.getHeaders() });
+  }
 }
