@@ -96,6 +96,9 @@ namespace StealMyPaintscheme.Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int?>("OriginalPaintSchemeId")
+                        .HasColumnType("integer");
+
                     b.PrimitiveCollection<List<string>>("Tags")
                         .HasColumnType("text[]");
 

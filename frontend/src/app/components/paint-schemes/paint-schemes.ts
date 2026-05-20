@@ -47,6 +47,29 @@ export class PaintSchemesComponent implements OnInit {
     this.selectedScheme.set(scheme);
   }
 
+  stealScheme(scheme: PaintScheme) {
+    // Maak een kopie van het schema zonder de originele ID's om het als nieuw op te slaan
+    const stolenScheme: PaintScheme = {
+      name: `${scheme.name} (Stolen)`,
+      description: scheme.description,
+      tags: scheme.tags ? [...scheme.tags] : [],
+      steps: scheme.steps.map(step => ({
+        where: step.where,
+        colour: step.colour,
+        paintingTechnique: step.paintingTechnique,
+        paintId: step.paintId
+      }))
+    };
+
+    this.paintSchemeService.addPaintScheme(stolenScheme).subscribe({
+      next: () => {
+        alert('Scheme stolen successfully!');
+        this.loadSchemes();
+      },
+      error: (err) => console.error('Error stealing scheme:', err)
+    });
+  }
+
   closeDetails() {
     this.selectedScheme.set(null);
   }

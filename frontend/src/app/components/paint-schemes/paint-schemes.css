@@ -359,8 +359,31 @@ button.success:hover {
   font-weight: 500;
 }
 
+.card-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 1rem;
+}
+
+button.steal-btn {
+  background-color: transparent;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid #e67e22;
+  color: #e67e22;
+}
+
+button.steal-btn:hover {
+  background-color: #e67e22;
+  color: white;
+}
+
 .modal-actions {
   margin-top: 2.5rem;
   display: flex;
   justify-content: flex-end;
+  gap: 1rem;
 }

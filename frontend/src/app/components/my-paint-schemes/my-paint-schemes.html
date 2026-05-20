@@ -110,6 +110,35 @@
     }
   </div>
 
+  @if (stolenSchemes().length > 0) {
+    <div class="section-banner stolen-banner">
+      <h2>Stolen Paint Schemes</h2>
+    </div>
+
+    <div class="scheme-list">
+      @for (scheme of stolenSchemes(); track scheme.id) {
+        <div class="scheme-card stolen-scheme">
+          <div class="scheme-header">
+            <h3>{{ scheme.name }}</h3>
+            <span class="badge stolen">Stolen</span>
+          </div>
+          @if (scheme.tags && scheme.tags.length > 0) {
+            <div class="tag-list">
+              @for (tag of scheme.tags; track tag) {
+                <span class="tag">#{{ tag }}</span>
+              }
+            </div>
+          }
+          <p>{{ scheme.description }}</p>
+          <div class="card-actions">
+            <button class="secondary" (click)="viewDetails(scheme)">View details</button>
+            <button class="danger-outline" (click)="deleteScheme(scheme.id)">Delete</button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
   @if (selectedScheme(); as scheme) {
     <div class="modal-backdrop" (click)="closeDetails()">
       <div class="modal-content" (click)="$event.stopPropagation()">

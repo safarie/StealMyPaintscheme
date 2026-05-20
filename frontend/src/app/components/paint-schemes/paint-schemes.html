@@ -30,7 +30,12 @@
           </div>
         }
         <p>{{ scheme.description }}</p>
-        <button class="secondary" (click)="viewDetails(scheme)">View details</button>
+        <div class="card-actions">
+          <button class="secondary" (click)="viewDetails(scheme)">View details</button>
+          @if (scheme.userId !== currentUserId()) {
+            <button class="steal-btn" (click)="stealScheme(scheme)">Steal</button>
+          }
+        </div>
       </div>
     } @empty {
       <p>No paint schemes found.</p>
@@ -81,6 +86,9 @@
         </div>
 
         <div class="modal-actions">
+          @if (scheme.userId !== currentUserId()) {
+            <button class="steal-btn" (click)="stealScheme(scheme)">Steal</button>
+          }
           <button class="secondary" (click)="closeDetails()">Close</button>
         </div>
       </div>
