@@ -22,10 +22,14 @@ export class PaintSchemesComponent implements OnInit {
   filteredSchemes = computed(() => {
     const term = this.searchTerm().toLowerCase();
     const schemes = this.paintSchemes();
+    const currentId = this.currentUserId();
 
-    if (!term) return schemes;
+    // Filter alle "stolen" schema's uit de algemene lijst
+    const originalSchemes = schemes.filter(s => !s.name.endsWith('(Stolen)'));
 
-    return schemes.filter(s =>
+    if (!term) return originalSchemes;
+
+    return originalSchemes.filter(s =>
       s.name.toLowerCase().includes(term) ||
       (s.description && s.description.toLowerCase().includes(term)) ||
       (s.tags && s.tags.some(t => t.toLowerCase().includes(term)))

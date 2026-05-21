@@ -92,12 +92,12 @@ namespace StealMyPaintscheme.Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsStolen")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<int?>("OriginalPaintSchemeId")
-                        .HasColumnType("integer");
 
                     b.PrimitiveCollection<List<string>>("Tags")
                         .HasColumnType("text[]");
