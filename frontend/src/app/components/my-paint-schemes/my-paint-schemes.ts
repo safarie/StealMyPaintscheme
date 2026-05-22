@@ -2,6 +2,7 @@
 import { FormsModule } from '@angular/forms';
 import { PaintSchemeService, PaintScheme, Step } from '../../services/paint-scheme.service';
 import { AuthService } from '../../services/auth.service';
+import { InventoryService, InventoryItem } from '../../services/inventory.service';
 
 @Component({
   selector: 'app-my-paint-schemes',
@@ -13,8 +14,10 @@ import { AuthService } from '../../services/auth.service';
 export class MyPaintSchemesComponent implements OnInit {
   private paintSchemeService = inject(PaintSchemeService);
   private authService = inject(AuthService);
+  private inventoryService = inject(InventoryService);
 
   paintSchemes = signal<PaintScheme[]>([]);
+  inventory = signal<InventoryItem[]>([]);
   currentUserId = this.authService.userId;
   selectedScheme = signal<PaintScheme | null>(null);
 
@@ -33,6 +36,7 @@ export class MyPaintSchemesComponent implements OnInit {
 
   ngOnInit() {
     this.loadSchemes();
+    this.loadInventory();
   }
 
   loadSchemes() {
@@ -42,12 +46,30 @@ export class MyPaintSchemesComponent implements OnInit {
     });
   }
 
+  loadInventory() {
+    this.inventoryService.getInventory().subscribe({
+      next: (items) => this.inventory.set(items),
+      error: (err) => console.error('Error loading inventory:', err)
+    });
+  }
+
   addStep() {
     this.steps.push({
       where: '',
       colour: '',
-      paintingTechnique: ''
+      paintingTechnique: '',
+      paintId: undefined
     });
+  }
+
+  onColourInput(index: number) {
+    const step = this.steps[index];
+    const selectedItem = this.inventory().find(item => item.paint?.name === step.colour);
+    if (selectedItem && selectedItem.paint) {
+      step.paintId = selectedItem.paint.id;
+    } else {
+      step.paintId = undefined;
+    }
   }
 
   removeStep(index: number) {

@@ -58,7 +58,20 @@
               </div>
               <div class="form-group">
                 <label>Colour</label>
-                <input type="text" [(ngModel)]="step.colour" [name]="'colour' + $index" placeholder="e.g. Blue" required />
+                <input
+                  type="text"
+                  [(ngModel)]="step.colour"
+                  [name]="'colour' + $index"
+                  placeholder="e.g. Blue"
+                  list="paint-suggestions"
+                  (input)="onColourInput($index)"
+                  required
+                />
+                <datalist id="paint-suggestions">
+                  @for (item of inventory(); track item.id) {
+                    <option [value]="item.paint?.name">{{ item.paint?.maker }}</option>
+                  }
+                </datalist>
               </div>
               <div class="form-group">
                 <label>Painting Technique</label>
@@ -176,6 +189,12 @@
                     <span class="label">Technique:</span>
                     <span class="value">{{ step.paintingTechnique }}</span>
                   </div>
+                  @if (step.paint) {
+                    <div class="info-item">
+                      <span class="label">Paint:</span>
+                      <span class="value">{{ step.paint.name }} ({{ step.paint.maker }})</span>
+                    </div>
+                  }
                 </div>
               </div>
             }

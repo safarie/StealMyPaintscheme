@@ -38,8 +38,8 @@
 }
 
 .step-inputs {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 1.5rem;
   align-items: flex-end;
 }
@@ -84,7 +84,8 @@
 }
 
 .scheme-form input,
-.scheme-form textarea {
+.scheme-form textarea,
+.scheme-form select {
   padding: 0.75rem;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
@@ -93,7 +94,8 @@
 }
 
 .scheme-form input:focus,
-.scheme-form textarea:focus {
+.scheme-form textarea:focus,
+.scheme-form select:focus {
   outline: none;
   border-color: #3498db;
   background-color: white;

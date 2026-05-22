@@ -1,6 +1,7 @@
 ﻿import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Paint } from './inventory.service';
 
 export interface Step {
   id?: number;
@@ -8,6 +9,7 @@ export interface Step {
   colour: string;
   paintingTechnique: string;
   paintId?: number;
+  paint?: Paint;
 }
 
 export interface PaintScheme {
