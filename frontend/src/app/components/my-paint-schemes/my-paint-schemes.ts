@@ -22,11 +22,17 @@ export class MyPaintSchemesComponent implements OnInit {
   selectedScheme = signal<PaintScheme | null>(null);
 
   ownSchemes = computed(() =>
-    this.paintSchemes().filter(s => s.userId === this.currentUserId() && !s.name.endsWith('(Stolen)'))
+    this.paintSchemes().filter(s =>
+      s.userId === this.currentUserId() &&
+      !s.isStolen
+    )
   );
 
   stolenSchemes = computed(() =>
-    this.paintSchemes().filter(s => s.userId === this.currentUserId() && s.name.endsWith('(Stolen)'))
+    this.paintSchemes().filter(s =>
+      s.userId === this.currentUserId() &&
+      s.isStolen
+    )
   );
 
   name = '';

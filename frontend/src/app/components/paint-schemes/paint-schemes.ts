@@ -25,7 +25,7 @@ export class PaintSchemesComponent implements OnInit {
     const currentId = this.currentUserId();
 
     // Filter alle "stolen" schema's uit de algemene lijst
-    const originalSchemes = schemes.filter(s => !s.name.endsWith('(Stolen)'));
+    const originalSchemes = schemes.filter(s => !s.isStolen);
 
     if (!term) return originalSchemes;
 
@@ -54,8 +54,9 @@ export class PaintSchemesComponent implements OnInit {
   stealScheme(scheme: PaintScheme) {
     // Maak een kopie van het schema zonder de originele ID's om het als nieuw op te slaan
     const stolenScheme: PaintScheme = {
-      name: `${scheme.name} (Stolen)`,
+      name: scheme.name,
       description: scheme.description,
+      isStolen: true,
       tags: scheme.tags ? [...scheme.tags] : [],
       steps: scheme.steps.map(step => ({
         where: step.where,

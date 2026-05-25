@@ -19,6 +19,7 @@ export interface PaintScheme {
   tags?: string[];
   userId?: number;
   createdAt?: string;
+  isStolen?: boolean;
   steps: Step[];
 }
 

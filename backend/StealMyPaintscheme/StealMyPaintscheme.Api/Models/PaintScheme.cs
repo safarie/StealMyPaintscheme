@@ -18,4 +18,6 @@ public class PaintScheme
     // Relation to User
     public int UserId { get; set; }
     
+    public bool IsStolen { get; set; }
+    
 }
