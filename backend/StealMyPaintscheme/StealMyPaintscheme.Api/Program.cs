@@ -113,7 +113,8 @@ app.MapPost("/login", async (AppDbContext db, User loginUser, IConfiguration con
     {
         new Claim(JwtRegisteredClaimNames.Sub, user.Username),
         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-        new Claim("userId", user.Id.ToString())
+        new Claim("userId", user.Id.ToString()),
+        new Claim("isAdmin", user.IsAdmin.ToString().ToLower())
     };
 
     var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]!));
@@ -129,7 +130,8 @@ app.MapPost("/login", async (AppDbContext db, User loginUser, IConfiguration con
 
     return Results.Ok(new
     {
-        token = new JwtSecurityTokenHandler().WriteToken(token)
+        token = new JwtSecurityTokenHandler().WriteToken(token),
+        isAdmin = user.IsAdmin
     });
 }).WithName("Login");
 
