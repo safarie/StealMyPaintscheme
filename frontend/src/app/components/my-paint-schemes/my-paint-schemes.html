@@ -106,7 +106,17 @@
       <div class="scheme-card own-scheme">
         <div class="scheme-header">
           <h3>{{ scheme.name }}</h3>
-          <span class="badge">Yours</span>
+          <div class="badge-container">
+            @if (isLoggedIn()) {
+              @let missingCount = getMissingPaintsCount(scheme);
+              @if (missingCount === 0) {
+                <span class="badge success" title="You have all the paints for this scheme!">Ready to Paint</span>
+              } @else {
+                <span class="badge warning" title="You are missing {{ missingCount }} paint(s)">Missing {{ missingCount }} paint(s)</span>
+              }
+            }
+            <span class="badge">Yours</span>
+          </div>
         </div>
         @if (scheme.tags && scheme.tags.length > 0) {
           <div class="tag-list">
@@ -137,7 +147,17 @@
         <div class="scheme-card stolen-scheme">
           <div class="scheme-header">
             <h3>{{ scheme.name }}</h3>
-            <span class="badge stolen">Stolen</span>
+            <div class="badge-container">
+              @if (isLoggedIn()) {
+                @let missingCount = getMissingPaintsCount(scheme);
+                @if (missingCount === 0) {
+                  <span class="badge success" title="You have all the paints for this scheme!">Ready to Paint</span>
+                } @else {
+                  <span class="badge warning" title="You are missing {{ missingCount }} paint(s)">Missing {{ missingCount }} paint(s)</span>
+                }
+              }
+              <span class="badge stolen">Stolen</span>
+            </div>
           </div>
           @if (scheme.tags && scheme.tags.length > 0) {
             <div class="tag-list">
@@ -187,7 +207,16 @@
                   </div>
                   <div class="info-item">
                     <span class="label">Colour:</span>
-                    <span class="value">{{ step.colour }}</span>
+                    <div class="value-container">
+                      <span class="value">{{ step.colour }}</span>
+                      @if (isLoggedIn() && step.paintId) {
+                        @if (hasPaintInInventory(step.paintId)) {
+                          <span class="inventory-status owned" title="You have this paint">✓</span>
+                        } @else {
+                          <span class="inventory-status missing" title="You don't have this paint">✗</span>
+                        }
+                      }
+                    </div>
                   </div>
                   <div class="info-item">
                     <span class="label">Technique:</span>

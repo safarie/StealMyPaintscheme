@@ -192,6 +192,44 @@ hr {
   font-weight: bold;
 }
 
+.badge-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.badge.success {
+  background-color: #27ae60;
+}
+
+.badge.warning {
+  background-color: #f39c12;
+}
+
+.inventory-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: bold;
+  margin-left: 5px;
+  vertical-align: middle;
+}
+
+.inventory-status.owned {
+  background-color: #27ae60;
+  color: white;
+}
+
+.inventory-status.missing {
+  background-color: #e74c3c;
+  color: white;
+}
+
 .tag-list {
   display: flex;
   flex-wrap: wrap;

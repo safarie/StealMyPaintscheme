@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PaintSchemeService, PaintScheme } from '../../services/paint-scheme.service';
 import { AuthService } from '../../services/auth.service';
+import { InventoryService, InventoryItem } from '../../services/inventory.service';
 
 @Component({
   selector: 'app-paint-schemes',
@@ -13,8 +14,11 @@ import { AuthService } from '../../services/auth.service';
 export class PaintSchemesComponent implements OnInit {
   private paintSchemeService = inject(PaintSchemeService);
   private authService = inject(AuthService);
+  private inventoryService = inject(InventoryService);
 
   paintSchemes = signal<PaintScheme[]>([]);
+  inventory = signal<InventoryItem[]>([]);
+  isLoggedIn = this.authService.isLoggedIn;
   currentUserId = this.authService.userId;
   searchTerm = signal<string>('');
   selectedScheme = signal<PaintScheme | null>(null);
@@ -38,12 +42,22 @@ export class PaintSchemesComponent implements OnInit {
 
   ngOnInit() {
     this.loadSchemes();
+    if (this.isLoggedIn()) {
+      this.loadInventory();
+    }
   }
 
   loadSchemes() {
     this.paintSchemeService.getPaintSchemes().subscribe({
       next: (schemes) => this.paintSchemes.set(schemes),
       error: (err) => console.error('Error loading schemes:', err)
+    });
+  }
+
+  loadInventory() {
+    this.inventoryService.getInventory().subscribe({
+      next: (items) => this.inventory.set(items),
+      error: (err) => console.error('Error loading inventory:', err)
     });
   }
 
@@ -77,5 +91,27 @@ export class PaintSchemesComponent implements OnInit {
 
   closeDetails() {
     this.selectedScheme.set(null);
+  }
+
+  hasPaintInInventory(paintId: number | undefined): boolean {
+    if (!paintId) return false;
+    return this.inventory().some(item => item.paintId === paintId);
+  }
+
+  getMissingPaintsCount(scheme: PaintScheme): number {
+    const uniquePaintIds = new Set(
+      scheme.steps
+        .map(s => s.paintId)
+        .filter((id): id is number => id !== undefined)
+    );
+
+    let missingCount = 0;
+    uniquePaintIds.forEach(id => {
+      if (!this.hasPaintInInventory(id)) {
+        missingCount++;
+      }
+    });
+
+    return missingCount;
   }
 }

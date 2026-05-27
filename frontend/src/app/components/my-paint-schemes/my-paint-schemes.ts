@@ -18,6 +18,7 @@ export class MyPaintSchemesComponent implements OnInit {
 
   paintSchemes = signal<PaintScheme[]>([]);
   inventory = signal<InventoryItem[]>([]);
+  isLoggedIn = this.authService.isLoggedIn;
   currentUserId = this.authService.userId;
   selectedScheme = signal<PaintScheme | null>(null);
 
@@ -43,7 +44,9 @@ export class MyPaintSchemesComponent implements OnInit {
 
   ngOnInit() {
     this.loadSchemes();
-    this.loadInventory();
+    if (this.isLoggedIn()) {
+      this.loadInventory();
+    }
   }
 
   loadSchemes() {
@@ -172,5 +175,27 @@ export class MyPaintSchemesComponent implements OnInit {
 
   closeDetails() {
     this.selectedScheme.set(null);
+  }
+
+  hasPaintInInventory(paintId: number | undefined): boolean {
+    if (!paintId) return false;
+    return this.inventory().some(item => item.paintId === paintId);
+  }
+
+  getMissingPaintsCount(scheme: PaintScheme): number {
+    const uniquePaintIds = new Set(
+      scheme.steps
+        .map(s => s.paintId)
+        .filter((id): id is number => id !== undefined)
+    );
+
+    let missingCount = 0;
+    uniquePaintIds.forEach(id => {
+      if (!this.hasPaintInInventory(id)) {
+        missingCount++;
+      }
+    });
+
+    return missingCount;
   }
 }

@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PaintSchemes } from './paint-schemes';
+import { PaintSchemesComponent } from './paint-schemes';
 
-describe('PaintSchemes', () => {
-  let component: PaintSchemes;
-  let fixture: ComponentFixture<PaintSchemes>;
+describe('PaintSchemesComponent', () => {
+  let component: PaintSchemesComponent;
+  let fixture: ComponentFixture<PaintSchemesComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PaintSchemes],
+      imports: [PaintSchemesComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(PaintSchemes);
+    fixture = TestBed.createComponent(PaintSchemesComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
