@@ -25,7 +25,7 @@ export class RegisterComponent {
     event.preventDefault();
 
     if (this.password !== this.confirmPassword) {
-      this.errorMessage.set('Wachtwoorden komen niet overeen.');
+      this.errorMessage.set('Passwords do not match.');
       return;
     }
 
@@ -40,8 +40,8 @@ export class RegisterComponent {
         this.router.navigate(['/login']);
       },
       error: (err) => {
-        console.error('Registratie fout:', err);
-        this.errorMessage.set('Er is iets misgegaan bij het registreren. Probeer het later opnieuw.');
+        console.error('Registration error:', err);
+        this.errorMessage.set('Something went wrong during registration. Please try again later.');
       }
     });
   }

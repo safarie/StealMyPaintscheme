@@ -1,15 +1,38 @@
-<section class="landing">
-  <h2>Welcome to Steal My Paint Scheme</h2>
-  <p>Discover and share your Paintscheme in one easy place </p>
+<section class="landing-hero">
+  <div class="hero-content">
+    <h1>Steal My Paint Scheme</h1>
+    <p>A central platform for sharing and discovering paint schemes for miniature painting.</p>
 
-  <div class="actions">
-    <button class="primary" routerLink="/paint-schemes">see the paint schemes</button>
-    @if (!authService.isLoggedIn()) {
-      <button class="secondary" routerLink="/register">Register new Account</button>
-    }
+    <div class="hero-actions">
+      <button class="primary btn-large" routerLink="/paint-schemes">Browse Paint Schemes</button>
+      @if (!authService.isLoggedIn()) {
+        <button class="secondary btn-large" routerLink="/register">Create Account</button>
+      }
+    </div>
   </div>
+</section>
 
-
+<section class="features">
+  <div class="feature-card">
+    <div class="feature-icon">🎨</div>
+    <h3>Discover</h3>
+    <p>Browse through a growing database of paint schemes from other hobbyists.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">💾</div>
+    <h3>Manage</h3>
+    <p>Save your own masterpieces and never forget which colors you've used.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">🧪</div>
+    <h3>Inventory</h3>
+    <p>Keep track of which Citadel paints you already have and what you still need to buy.</p>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">🔗</div>
+    <h3>Share</h3>
+    <p>Easily share your favorite paint schemes with your friends and the community.</p>
+  </div>
 </section>
 
 

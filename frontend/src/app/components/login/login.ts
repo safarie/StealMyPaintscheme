@@ -37,8 +37,8 @@ export class LoginComponent {
         }
       },
       error: (err) => {
-        console.error('Login fout:', err);
-        this.errorMessage.set('Ongeldige gebruikersnaam of wachtwoord.');
+        console.error('Login error:', err);
+        this.errorMessage.set('Invalid username or password.');
       }
     });
   }
