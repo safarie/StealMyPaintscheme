@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { InventoryService, InventoryItem, Paint } from '../../services/inventory.service';
+import { InventoryService, InventoryItem, Paint, GlobalPaint } from '../../services/inventory.service';
 
 @Component({
   selector: 'app-inventory',
@@ -14,6 +14,7 @@ export class InventoryComponent implements OnInit {
   private inventoryService = inject(InventoryService);
 
   inventoryItems = signal<InventoryItem[]>([]);
+  globalPaints = signal<GlobalPaint[]>([]);
   showForm = false;
   errorMessage = signal<string | null>(null);
   successMessage = signal<string | null>(null);
@@ -28,6 +29,7 @@ export class InventoryComponent implements OnInit {
 
   ngOnInit() {
     this.loadInventory();
+    this.loadGlobalPaints();
   }
 
   loadInventory() {
@@ -35,6 +37,55 @@ export class InventoryComponent implements OnInit {
       next: (items) => this.inventoryItems.set(items),
       error: (err) => console.error('Error loading inventory:', err)
     });
+  }
+
+  loadGlobalPaints() {
+    this.inventoryService.getGlobalPaints().subscribe({
+      next: (paints) => this.globalPaints.set(paints),
+      error: (err) => console.error('Error loading global paints:', err)
+    });
+  }
+
+  onNameInput() {
+    // Check of de input de vorm "Naam (Type)" heeft, wat gebeurt bij een selectie uit de datalist
+    const selectionMatch = this.newName.match(/^(.+) \((.+)\)$/);
+
+    if (selectionMatch) {
+      const name = selectionMatch[1];
+      const type = selectionMatch[2];
+
+      const exactMatch = this.globalPaints().find(p =>
+        p.name.toLowerCase() === name.toLowerCase() &&
+        p.type.toLowerCase() === type.toLowerCase()
+      );
+
+      if (exactMatch) {
+        this.newName = exactMatch.name;
+        this.newType = exactMatch.type;
+        this.newBrand = exactMatch.maker;
+        return;
+      }
+    }
+
+    // Zoek eerst of er een exacte match is voor de combinatie van naam en type (indien type al is ingevuld door selectie)
+    const matches = this.globalPaints().filter(p => p.name.toLowerCase() === this.newName.toLowerCase());
+
+    if (matches.length === 1) {
+      // Slechts één match, vul alles in
+      const selectedPaint = matches[0];
+      this.newType = selectedPaint.type;
+      this.newBrand = selectedPaint.maker;
+      this.newName = selectedPaint.name;
+    } else if (matches.length > 1) {
+      // Meerdere matches met dezelfde naam (bijv. Wraithbone)
+      // Zoek een match die ook overeenkomt met het huidige type
+      const typeMatch = matches.find(p => p.type.toLowerCase() === this.newType.toLowerCase());
+      if (typeMatch) {
+        this.newType = typeMatch.type;
+        this.newBrand = typeMatch.maker;
+        this.newName = typeMatch.name;
+      }
+    }
   }
 
   onDelete(id: number | undefined) {

@@ -26,13 +26,36 @@
   <form class="inventory-form" (submit)="onSave($event)">
     <div class="form-group">
       <label for="paint-name">Name</label>
-      <input type="text" id="paint-name" name="newName" [(ngModel)]="newName" placeholder="e.g. Mephiston Red" required />
+      <input
+        type="text"
+        id="paint-name"
+        name="newName"
+        [(ngModel)]="newName"
+        placeholder="e.g. Mephiston Red"
+        list="global-paint-suggestions"
+        (input)="onNameInput()"
+        (change)="onNameInput()"
+        required
+      />
+      <datalist id="global-paint-suggestions">
+        @for (paint of globalPaints(); track paint.id) {
+          <option [value]="paint.name + ' (' + paint.type + ')'">{{ paint.maker }}</option>
+        }
+      </datalist>
     </div>
 
     <div class="form-row">
       <div class="form-group">
         <label for="paint-type">Type</label>
-        <input type="text" id="paint-type" name="newType" [(ngModel)]="newType" placeholder="e.g. Base" required />
+        <input
+          type="text"
+          id="paint-type"
+          name="newType"
+          [(ngModel)]="newType"
+          placeholder="e.g. Base"
+          (input)="onNameInput()"
+          required
+        />
       </div>
 
       <div class="form-group">

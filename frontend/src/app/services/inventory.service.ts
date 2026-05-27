@@ -18,6 +18,13 @@ export interface InventoryItem {
   userId?: number;
 }
 
+export interface GlobalPaint {
+  id: number;
+  name: string;
+  type: string;
+  maker: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -34,6 +41,10 @@ export class InventoryService {
 
   getInventory(): Observable<InventoryItem[]> {
     return this.http.get<InventoryItem[]>(`${this.baseUrl}/inventory-items`, { headers: this.getHeaders() });
+  }
+
+  getGlobalPaints(): Observable<GlobalPaint[]> {
+    return this.http.get<GlobalPaint[]>(`${this.baseUrl}/global-paints`);
   }
 
   addPaint(paint: Paint): Observable<Paint> {
