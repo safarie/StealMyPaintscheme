@@ -39,6 +39,7 @@ export class MyPaintSchemesComponent implements OnInit {
   description = '';
   tagsInput = '';
   steps: Step[] = [];
+  editingSchemeId = signal<number | null>(null);
 
   ngOnInit() {
     this.loadSchemes();
@@ -82,6 +83,26 @@ export class MyPaintSchemesComponent implements OnInit {
     this.steps.splice(index, 1);
   }
 
+  editScheme(scheme: PaintScheme) {
+    this.editingSchemeId.set(scheme.id || null);
+    this.name = scheme.name;
+    this.description = scheme.description || '';
+    this.tagsInput = scheme.tags ? scheme.tags.join(', ') : '';
+    // Deep copy steps to avoid direct modification
+    this.steps = scheme.steps.map(s => ({ ...s }));
+
+    // Scroll naar formulier
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  cancelEdit() {
+    this.editingSchemeId.set(null);
+    this.name = '';
+    this.description = '';
+    this.tagsInput = '';
+    this.steps = [];
+  }
+
   onSubmit(event: Event) {
     event.preventDefault();
 
@@ -102,23 +123,34 @@ export class MyPaintSchemesComponent implements OnInit {
       }
     }
 
-    const newScheme: PaintScheme = {
+    const schemeData: PaintScheme = {
       name: this.name,
       description: this.description,
       tags: this.tagsInput ? this.tagsInput.split(',').map(t => t.trim()).filter(t => t !== '') : [],
-      steps: this.steps
+      steps: this.steps.map(s => {
+        const { id, ...rest } = s; // Verwijder id bij nieuwe stappen of bij update (backend vervangt ze)
+        return rest as Step;
+      })
     };
 
-    this.paintSchemeService.addPaintScheme(newScheme).subscribe({
-      next: () => {
-        this.loadSchemes();
-        this.name = '';
-        this.description = '';
-        this.tagsInput = '';
-        this.steps = [];
-      },
-      error: (err) => console.error('Error adding scheme:', err)
-    });
+    const editId = this.editingSchemeId();
+    if (editId) {
+      this.paintSchemeService.updatePaintScheme(editId, schemeData).subscribe({
+        next: () => {
+          this.loadSchemes();
+          this.cancelEdit();
+        },
+        error: (err) => console.error('Error updating scheme:', err)
+      });
+    } else {
+      this.paintSchemeService.addPaintScheme(schemeData).subscribe({
+        next: () => {
+          this.loadSchemes();
+          this.cancelEdit();
+        },
+        error: (err) => console.error('Error adding scheme:', err)
+      });
+    }
   }
 
   deleteScheme(id: number | undefined) {

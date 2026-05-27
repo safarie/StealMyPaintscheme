@@ -260,6 +260,39 @@ app.MapDelete("/paint-schemes/{id}", async (AppDbContext db, int id, ClaimsPrinc
     return Results.NoContent();
 }).WithName("DeletePaintScheme").RequireAuthorization();
 
+app.MapPut("/paint-schemes/{id}", async (AppDbContext db, int id, PaintScheme updatedScheme, ClaimsPrincipal userPrincipal, ILogger<Program> logger) =>
+{
+    var userIdClaim = userPrincipal.FindFirst("userId")?.Value;
+    if (userIdClaim == null || !int.TryParse(userIdClaim, out var userId))
+    {
+        return Results.Unauthorized();
+    }
+
+    var scheme = await db.PaintSchemes
+        .Include(ps => ps.Steps)
+        .FirstOrDefaultAsync(ps => ps.Id == id && ps.UserId == userId);
+
+    if (scheme == null) return Results.NotFound();
+
+    scheme.Name = updatedScheme.Name;
+    scheme.Description = updatedScheme.Description;
+    scheme.Tags = updatedScheme.Tags;
+    
+    // Update steps
+    db.Steps.RemoveRange(scheme.Steps);
+    scheme.Steps = updatedScheme.Steps;
+
+    try 
+    {
+        await db.SaveChangesAsync();
+        return Results.Ok(scheme);
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem($"Fout bij bijwerken: {ex.Message}");
+    }
+}).WithName("UpdatePaintScheme").RequireAuthorization();
+
 // Steps
 app.MapPost("/steps", async (AppDbContext db, Step step) =>
 {
