@@ -23,6 +23,35 @@ namespace StealMyPaintscheme.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("StealMyPaintscheme.Api.Models.GlobalPaint", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Maker")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RGB")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GlobalPaints");
+                });
+
             modelBuilder.Entity("StealMyPaintscheme.Api.Models.InventoryItem", b =>
                 {
                     b.Property<int>("Id")
@@ -75,6 +104,31 @@ namespace StealMyPaintscheme.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Paints");
+                });
+
+            modelBuilder.Entity("StealMyPaintscheme.Api.Models.PaintDatabase", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Maker")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PaintDatabases");
                 });
 
             modelBuilder.Entity("StealMyPaintscheme.Api.Models.PaintScheme", b =>
@@ -158,6 +212,9 @@ namespace StealMyPaintscheme.Api.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Password")
                         .IsRequired()

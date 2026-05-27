@@ -15,4 +15,5 @@ public class AppDbContext : DbContext
     public DbSet<User> Users => Set<User>();
     public DbSet<InventoryItem> InventoryItems => Set<InventoryItem>();
     public DbSet<PaintDatabase> PaintDatabases => Set<PaintDatabase>();
+    public DbSet<GlobalPaint> GlobalPaints => Set<GlobalPaint>();
 }

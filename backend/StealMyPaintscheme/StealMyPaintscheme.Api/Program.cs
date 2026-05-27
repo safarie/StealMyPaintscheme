@@ -342,4 +342,22 @@ app.MapPut("/inventory-items/{id}", async (AppDbContext db, int id, InventoryIte
     return Results.Ok(item);
 }).WithName("UpdateInventoryItem").RequireAuthorization();
 
+// GlobalPaints
+app.MapGet("/global-paints", async (AppDbContext db) =>
+    await db.GlobalPaints.ToListAsync()).WithName("GetGlobalPaints");
+
+app.MapPost("/global-paints/import", async (AppDbContext db, List<GlobalPaint> paints) =>
+{
+    foreach (var paint in paints)
+    {
+        var exists = await db.GlobalPaints.AnyAsync(p => p.Name == paint.Name && p.Maker == paint.Maker);
+        if (!exists)
+        {
+            db.GlobalPaints.Add(paint);
+        }
+    }
+    await db.SaveChangesAsync();
+    return Results.Ok(new { message = $"{paints.Count} verfjes verwerkt." });
+}).WithName("ImportGlobalPaints").RequireAuthorization(); // Optioneel: .RequireAdmin() als dat bestaat
+
 app.Run();
