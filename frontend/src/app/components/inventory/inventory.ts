@@ -25,6 +25,7 @@ export class InventoryComponent implements OnInit {
   newName = '';
   newType = '';
   newBrand = '';
+  newRGB = '';
   newQuantity = 1;
 
   ngOnInit() {
@@ -63,6 +64,7 @@ export class InventoryComponent implements OnInit {
         this.newName = exactMatch.name;
         this.newType = exactMatch.type;
         this.newBrand = exactMatch.maker;
+        this.newRGB = this.formatRGB(exactMatch.rgb);
         return;
       }
     }
@@ -76,6 +78,7 @@ export class InventoryComponent implements OnInit {
       this.newType = selectedPaint.type;
       this.newBrand = selectedPaint.maker;
       this.newName = selectedPaint.name;
+      this.newRGB = this.formatRGB(selectedPaint.rgb);
     } else if (matches.length > 1) {
       // Meerdere matches met dezelfde naam (bijv. Wraithbone)
       // Zoek een match die ook overeenkomt met het huidige type
@@ -84,8 +87,18 @@ export class InventoryComponent implements OnInit {
         this.newType = typeMatch.type;
         this.newBrand = typeMatch.maker;
         this.newName = typeMatch.name;
+        this.newRGB = this.formatRGB(typeMatch.rgb);
       }
     }
+  }
+
+  formatRGB(rgb: string | undefined): string {
+    if (!rgb) return '';
+    if (rgb.startsWith('#')) return rgb;
+    if (rgb.includes(',')) {
+      return `rgb(${rgb})`;
+    }
+    return rgb;
   }
 
   onDelete(id: number | undefined) {
@@ -155,7 +168,8 @@ export class InventoryComponent implements OnInit {
     const newPaint: Paint = {
       name: this.newName,
       type: this.newType,
-      maker: this.newBrand
+      maker: this.newBrand,
+      rgb: this.newRGB
     };
 
     // First create the paint, then create the inventory item
@@ -191,6 +205,7 @@ export class InventoryComponent implements OnInit {
     this.newName = '';
     this.newType = '';
     this.newBrand = '';
+    this.newRGB = '';
     this.newQuantity = 1;
   }
 }

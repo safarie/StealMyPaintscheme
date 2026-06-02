@@ -170,3 +170,35 @@ td {
   background-color: #edf2f7;
   color: #2d3748;
 }
+
+.color-preview {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid white;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+  box-shadow: 0 0 0 1px #e2e8f0, 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.rgb-value {
+  color: #718096;
+  font-family: monospace;
+  font-size: 0.7rem;
+}
+
+.quantity-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.form-preview {
+  width: 32px;
+  height: 32px;
+  margin-right: 0;
+  border-width: 2px;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px #e2e8f0, 0 2px 5px rgba(0,0,0,0.15);
+}

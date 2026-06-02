@@ -7,4 +7,5 @@ public class Paint
     public required string Name { get; set; }
     public required string Type { get; set; }
     public required string Maker { get; set; }
+    public string? RGB { get; set; }
 }

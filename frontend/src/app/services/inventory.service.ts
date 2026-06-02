@@ -8,6 +8,7 @@ export interface Paint {
   type: string;
   maker: string;
   userId?: number;
+  rgb?: string;
 }
 
 export interface InventoryItem {
@@ -23,6 +24,7 @@ export interface GlobalPaint {
   name: string;
   type: string;
   maker: string;
+  rgb: string;
 }
 
 @Injectable({
