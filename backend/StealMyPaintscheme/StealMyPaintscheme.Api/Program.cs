@@ -110,8 +110,11 @@ app.MapGet("/hello-world", () => "Hello world!");
 // Login
 app.MapPost("/login", async (AppDbContext db, User loginUser, IConfiguration config, ILogger<Program> logger) =>
 {
-    var user = await db.Users.FirstOrDefaultAsync(u => u.Username == loginUser.Username && u.Password == loginUser.Password);
-    if (user is null) return Results.Unauthorized();
+    var user = await db.Users.FirstOrDefaultAsync(u => u.Username == loginUser.Username);
+    if (user is null || !BCrypt.Net.BCrypt.Verify(loginUser.Password, user.Password)) 
+    {
+        return Results.Unauthorized();
+    }
 
     var claims = new[]
     {
@@ -148,14 +151,13 @@ app.MapPost("/users", async (AppDbContext db, User user) =>
     var existingUser = await db.Users.AnyAsync(u => u.Username == user.Username || u.Email == user.Email);
     if (existingUser) return Results.BadRequest("Gebruikersnaam of e-mail is al in gebruik.");
 
+    user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
     user.IsAdmin = false; // Voorkom dat gebruikers zichzelf admin maken bij registratie
     db.Users.Add(user);
     await db.SaveChangesAsync();
     return Results.Created($"/users/{user.Id}", user);
 }).WithName("CreateUser");
 
-app.MapGet("/users", async (AppDbContext db) =>
-    await db.Users.ToListAsync()).WithName("GetUsers").RequireAuthorization();
 
 // Paints
 app.MapPost("/paints", async (AppDbContext db, Paint paint, ClaimsPrincipal userPrincipal) =>
@@ -339,6 +341,37 @@ app.MapPost("/upload", async (IFormFile file, IWebHostEnvironment env, ILogger<P
         {
             logger.LogWarning("UploadImage: Geen bestand geselecteerd of bestand is leeg.");
             return Results.BadRequest("Geen bestand geselecteerd.");
+        }
+
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp", ".gif" };
+        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+        if (!allowedExtensions.Contains(extension))
+        {
+            logger.LogWarning("UploadImage: Geblokkeerde bestandsextensie {Extension}", extension);
+            return Results.BadRequest("Alleen afbeeldingen toegestaan (.jpg, .jpeg, .png, .webp, .gif).");
+        }
+
+        var header = new byte[12];
+        using (var peek = file.OpenReadStream())
+        {
+            await peek.ReadAsync(header, 0, header.Length);
+        }
+
+        bool validMagic =
+            // JPEG: FF D8 FF
+            (header[0] == 0xFF && header[1] == 0xD8 && header[2] == 0xFF) ||
+            // PNG: 89 50 4E 47 0D 0A 1A 0A
+            (header[0] == 0x89 && header[1] == 0x50 && header[2] == 0x4E && header[3] == 0x47) ||
+            // GIF: GIF87a / GIF89a
+            (header[0] == 0x47 && header[1] == 0x49 && header[2] == 0x46 && header[3] == 0x38) ||
+            // WebP: RIFF????WEBP
+            (header[0] == 0x52 && header[1] == 0x49 && header[2] == 0x46 && header[3] == 0x46 &&
+             header[8] == 0x57 && header[9] == 0x45 && header[10] == 0x42 && header[11] == 0x50);
+
+        if (!validMagic)
+        {
+            logger.LogWarning("UploadImage: Magic bytes komen niet overeen met een toegestaan afbeeldingsformaat.");
+            return Results.BadRequest("Bestandsinhoud komt niet overeen met een afbeelding.");
         }
 
         if (string.IsNullOrEmpty(env.WebRootPath))
