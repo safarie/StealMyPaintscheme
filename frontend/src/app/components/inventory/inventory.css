@@ -182,11 +182,6 @@ td {
   box-shadow: 0 0 0 1px #e2e8f0, 0 1px 3px rgba(0,0,0,0.1);
 }
 
-.rgb-value {
-  color: #718096;
-  font-family: monospace;
-  font-size: 0.7rem;
-}
 
 .quantity-input-wrapper {
   display: flex;

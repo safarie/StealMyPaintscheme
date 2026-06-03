@@ -87,7 +87,7 @@
   <table>
     <thead>
       <tr>
-        <th>Color</th>
+        <th>Colour</th>
         <th>Name</th>
         <th>Type</th>
         <th>Brand</th>
@@ -101,7 +101,6 @@
           <td>
             @if (item.paint?.rgb) {
               <div class="color-preview" [style.background-color]="formatRGB(item.paint?.rgb)" [title]="item.paint?.rgb"></div>
-              <small class="rgb-value">{{ item.paint?.rgb }}</small>
             }
           </td>
           <td>{{ item.paint?.name }}</td>

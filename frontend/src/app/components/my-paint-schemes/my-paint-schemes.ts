@@ -72,6 +72,15 @@ export class MyPaintSchemesComponent implements OnInit {
     });
   }
 
+  formatRGB(rgb: string | undefined): string {
+    if (!rgb) return '';
+    if (rgb.startsWith('#')) return rgb;
+    if (rgb.includes(',')) {
+      return `rgb(${rgb})`;
+    }
+    return rgb;
+  }
+
   onColourInput(index: number) {
     const step = this.steps[index];
     const selectedItem = this.inventory().find(item => item.paint?.name === step.colour);

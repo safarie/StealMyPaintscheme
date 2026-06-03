@@ -419,6 +419,38 @@ button.danger-outline:hover {
   text-align: left;
 }
 
+.color-preview {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid white;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+  box-shadow: 0 0 0 1px #e2e8f0, 0 1px 3px rgba(0,0,0,0.1);
+  flex-shrink: 0;
+}
+
+.color-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.form-preview {
+  width: 32px;
+  height: 32px;
+  margin-right: 0;
+  border-width: 2px;
+  box-shadow: 0 0 0 1px #e2e8f0, 0 2px 5px rgba(0,0,0,0.15);
+}
+
+.value-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .info-item {
   display: flex;
   flex-direction: column;

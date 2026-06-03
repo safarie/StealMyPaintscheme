@@ -84,6 +84,9 @@
                   <div class="info-item">
                     <span class="label">Colour:</span>
                     <div class="value-container">
+                      @if (step.paint?.rgb) {
+                        <div class="color-preview" [style.background-color]="formatRGB(step.paint?.rgb)" [title]="step.paint?.rgb"></div>
+                      }
                       <span class="value">{{ step.colour }}</span>
                       @if (isLoggedIn() && step.paintId) {
                         @if (hasPaintInInventory(step.paintId)) {

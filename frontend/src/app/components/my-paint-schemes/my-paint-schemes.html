@@ -58,15 +58,21 @@
               </div>
               <div class="form-group">
                 <label>Colour</label>
-                <input
-                  type="text"
-                  [(ngModel)]="step.colour"
-                  [name]="'colour' + $index"
-                  placeholder="e.g. Blue"
-                  list="paint-suggestions"
-                  (input)="onColourInput($index)"
-                  required
-                />
+                <div class="color-input-wrapper">
+                  <input
+                    type="text"
+                    [(ngModel)]="step.colour"
+                    [name]="'colour' + $index"
+                    placeholder="e.g. Blue"
+                    list="paint-suggestions"
+                    (input)="onColourInput($index)"
+                    required
+                  />
+                  @let selectedItem = inventory().find(item => item.paint?.name === step.colour);
+                  @if (selectedItem?.paint?.rgb) {
+                    <div class="color-preview form-preview" [style.background-color]="formatRGB(selectedItem?.paint?.rgb)" [title]="selectedItem?.paint?.rgb"></div>
+                  }
+                </div>
                 <datalist id="paint-suggestions">
                   @for (item of inventory(); track item.id) {
                     <option [value]="item.paint?.name">{{ item.paint?.maker }}</option>
@@ -208,6 +214,9 @@
                   <div class="info-item">
                     <span class="label">Colour:</span>
                     <div class="value-container">
+                      @if (step.paint?.rgb) {
+                        <div class="color-preview" [style.background-color]="formatRGB(step.paint?.rgb)" [title]="step.paint?.rgb"></div>
+                      }
                       <span class="value">{{ step.colour }}</span>
                       @if (isLoggedIn() && step.paintId) {
                         @if (hasPaintInInventory(step.paintId)) {

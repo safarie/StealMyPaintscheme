@@ -61,6 +61,15 @@ export class PaintSchemesComponent implements OnInit {
     });
   }
 
+  formatRGB(rgb: string | undefined): string {
+    if (!rgb) return '';
+    if (rgb.startsWith('#')) return rgb;
+    if (rgb.includes(',')) {
+      return `rgb(${rgb})`;
+    }
+    return rgb;
+  }
+
   viewDetails(scheme: PaintScheme) {
     this.selectedScheme.set(scheme);
   }
