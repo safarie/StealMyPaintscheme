@@ -50,6 +50,9 @@
           @if (scheme.userId !== currentUserId()) {
             <button class="steal-btn" (click)="stealScheme(scheme)">Steal</button>
           }
+          @if (isAdmin()) {
+            <button class="delete-btn" (click)="deleteScheme(scheme)">Delete</button>
+          }
         </div>
       </div>
     } @empty {
@@ -127,6 +130,9 @@
         <div class="modal-actions">
           @if (scheme.userId !== currentUserId()) {
             <button class="steal-btn" (click)="stealScheme(scheme)">Steal</button>
+          }
+          @if (isAdmin()) {
+            <button class="delete-btn" (click)="deleteScheme(scheme)">Delete</button>
           }
           <button class="secondary" (click)="closeDetails()">Close</button>
         </div>

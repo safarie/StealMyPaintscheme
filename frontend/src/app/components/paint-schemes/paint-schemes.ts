@@ -19,6 +19,7 @@ export class PaintSchemesComponent implements OnInit {
   paintSchemes = signal<PaintScheme[]>([]);
   inventory = signal<InventoryItem[]>([]);
   isLoggedIn = this.authService.isLoggedIn;
+  isAdmin = this.authService.isAdmin;
   currentUserId = this.authService.userId;
   searchTerm = signal<string>('');
   selectedScheme = signal<PaintScheme | null>(null);
@@ -96,6 +97,25 @@ export class PaintSchemesComponent implements OnInit {
         this.loadSchemes();
       },
       error: (err) => console.error('Error stealing scheme:', err)
+    });
+  }
+
+  deleteScheme(scheme: PaintScheme) {
+    if (!scheme.id) return;
+    if (!confirm(`Weet je zeker dat je "${scheme.name}" wilt verwijderen?`)) return;
+
+    this.paintSchemeService.deletePaintScheme(scheme.id).subscribe({
+      next: () => {
+        alert('Schema succesvol verwijderd!');
+        this.loadSchemes();
+        if (this.selectedScheme()?.id === scheme.id) {
+          this.closeDetails();
+        }
+      },
+      error: (err) => {
+        console.error('Error deleting scheme:', err);
+        alert('Er is een fout opgetreden bij het verwijderen.');
+      }
     });
   }
 

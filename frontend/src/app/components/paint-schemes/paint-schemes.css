@@ -438,6 +438,21 @@ button.steal-btn:hover {
   color: white;
 }
 
+button.delete-btn {
+  background-color: transparent;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid #e74c3c;
+  color: #e74c3c;
+}
+
+button.delete-btn:hover {
+  background-color: #e74c3c;
+  color: white;
+}
+
 .modal-actions {
   margin-top: 2.5rem;
   display: flex;

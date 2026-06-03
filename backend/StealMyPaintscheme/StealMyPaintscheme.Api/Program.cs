@@ -242,23 +242,51 @@ app.MapGet("/paint-schemes", async (AppDbContext db, ClaimsPrincipal userPrincip
 
 app.MapDelete("/paint-schemes/{id}", async (AppDbContext db, int id, ClaimsPrincipal userPrincipal, ILogger<Program> logger) =>
 {
-    var userIdClaim = userPrincipal.FindFirst("userId")?.Value;
-    if (userIdClaim == null || !int.TryParse(userIdClaim, out var userId))
+    foreach (var claim in userPrincipal.Claims)
     {
-        logger.LogWarning("DeletePaintScheme: Geen userId claim gevonden voor id {Id}", id);
-        return Results.Unauthorized();
+        logger.LogInformation("DeletePaintScheme: Claim gevonden - Type: {Type}, Value: {Value}", claim.Type, claim.Value);
     }
 
-    logger.LogInformation("DeletePaintScheme: Poging om schema {Id} te verwijderen voor gebruiker {UserId}", id, userId);
+    var isAdmin = userPrincipal.HasClaim("isAdmin", "true") || 
+                  userPrincipal.HasClaim(c => c.Type.EndsWith("isAdmin") && c.Value.ToLower() == "true");
 
-    var scheme = await db.PaintSchemes
-        .Include(ps => ps.Steps)
-        .FirstOrDefaultAsync(ps => ps.Id == id && ps.UserId == userId);
+    var userIdClaim = userPrincipal.FindFirst("userId")?.Value ?? 
+                      userPrincipal.FindFirst(c => c.Type.EndsWith("userId"))?.Value;
+
+    if (userIdClaim == null || !int.TryParse(userIdClaim, out var userId))
+    {
+        if (isAdmin)
+        {
+            logger.LogInformation("DeletePaintScheme: Geen geldige userId claim gevonden voor admin, maar gaat door.");
+            userId = 0; // Dummy value voor admin
+        }
+        else
+        {
+            logger.LogWarning("DeletePaintScheme: Geen userId claim gevonden voor id {Id}", id);
+            return Results.Unauthorized();
+        }
+    }
+
+    logger.LogInformation("DeletePaintScheme: Poging om schema {Id} te verwijderen door gebruiker {UserId} (Admin: {IsAdmin})", id, userId, isAdmin);
+
+    var query = db.PaintSchemes.Include(ps => ps.Steps).AsQueryable();
+    
+    // Als de gebruiker geen admin is, mag hij alleen zijn eigen schema's verwijderen
+    if (!isAdmin)
+    {
+        query = query.Where(ps => ps.UserId == userId);
+    }
+    else 
+    {
+        logger.LogInformation("DeletePaintScheme: Gebruiker is admin, UserId filter overgeslagen.");
+    }
+
+    var scheme = await query.FirstOrDefaultAsync(ps => ps.Id == id);
         
     if (scheme == null)
     {
         var exists = await db.PaintSchemes.AnyAsync(ps => ps.Id == id);
-        logger.LogWarning("DeletePaintScheme: Schema {Id} niet gevonden voor gebruiker {UserId}. Bestaat het schema überhaupt? {Exists}", id, userId, exists);
+        logger.LogWarning("DeletePaintScheme: Schema {Id} niet gevonden of niet toegankelijk voor gebruiker {UserId}. Bestaat het schema überhaupt? {Exists}", id, userId, exists);
         return Results.NotFound();
     }
 
