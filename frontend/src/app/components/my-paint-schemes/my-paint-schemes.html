@@ -69,13 +69,19 @@
                     required
                   />
                   @let selectedItem = inventory().find(item => item.paint?.name === step.colour);
+                  @let globalPaint = globalPaints().find(p => p.name === step.colour);
                   @if (selectedItem?.paint?.rgb) {
                     <div class="color-preview form-preview" [style.background-color]="formatRGB(selectedItem?.paint?.rgb)" [title]="selectedItem?.paint?.rgb"></div>
+                  } @else if (globalPaint?.rgb) {
+                    <div class="color-preview form-preview" [style.background-color]="formatRGB(globalPaint?.rgb)" [title]="globalPaint?.rgb"></div>
                   }
                 </div>
                 <datalist id="paint-suggestions">
                   @for (item of inventory(); track item.id) {
-                    <option [value]="item.paint?.name">{{ item.paint?.maker }}</option>
+                    <option [value]="item.paint?.name">{{ item.paint?.maker }} (In Inventory)</option>
+                  }
+                  @for (paint of globalPaints(); track paint.id) {
+                    <option [value]="paint.name + ' (' + paint.type + ')'">{{ paint.maker }}</option>
                   }
                 </datalist>
               </div>

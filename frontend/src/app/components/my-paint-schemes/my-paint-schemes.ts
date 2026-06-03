@@ -2,7 +2,7 @@
 import { FormsModule } from '@angular/forms';
 import { PaintSchemeService, PaintScheme, Step } from '../../services/paint-scheme.service';
 import { AuthService } from '../../services/auth.service';
-import { InventoryService, InventoryItem } from '../../services/inventory.service';
+import { InventoryService, InventoryItem, GlobalPaint } from '../../services/inventory.service';
 
 @Component({
   selector: 'app-my-paint-schemes',
@@ -18,6 +18,7 @@ export class MyPaintSchemesComponent implements OnInit {
 
   paintSchemes = signal<PaintScheme[]>([]);
   inventory = signal<InventoryItem[]>([]);
+  globalPaints = signal<GlobalPaint[]>([]);
   isLoggedIn = this.authService.isLoggedIn;
   currentUserId = this.authService.userId;
   selectedScheme = signal<PaintScheme | null>(null);
@@ -44,6 +45,7 @@ export class MyPaintSchemesComponent implements OnInit {
 
   ngOnInit() {
     this.loadSchemes();
+    this.loadGlobalPaints();
     if (this.isLoggedIn()) {
       this.loadInventory();
     }
@@ -60,6 +62,13 @@ export class MyPaintSchemesComponent implements OnInit {
     this.inventoryService.getInventory().subscribe({
       next: (items) => this.inventory.set(items),
       error: (err) => console.error('Error loading inventory:', err)
+    });
+  }
+
+  loadGlobalPaints() {
+    this.inventoryService.getGlobalPaints().subscribe({
+      next: (paints) => this.globalPaints.set(paints),
+      error: (err) => console.error('Error loading global paints:', err)
     });
   }
 
@@ -83,11 +92,39 @@ export class MyPaintSchemesComponent implements OnInit {
 
   onColourInput(index: number) {
     const step = this.steps[index];
+
+    // Check of de input de vorm "Naam (Type)" heeft, wat gebeurt bij een selectie uit de datalist
+    const selectionMatch = step.colour.match(/^(.+) \((.+)\)$/);
+
+    if (selectionMatch) {
+      const name = selectionMatch[1];
+      const type = selectionMatch[2];
+
+      const exactMatch = this.globalPaints().find(p =>
+        p.name.toLowerCase() === name.toLowerCase() &&
+        p.type.toLowerCase() === type.toLowerCase()
+      );
+
+      if (exactMatch) {
+        step.colour = exactMatch.name;
+        step.paintId = exactMatch.id;
+        // Optioneel: techniek invullen als die leeg is? In inventory wordt maker en type ingevuld.
+        return;
+      }
+    }
+
+    // Zoek in eigen inventory
     const selectedItem = this.inventory().find(item => item.paint?.name === step.colour);
     if (selectedItem && selectedItem.paint) {
       step.paintId = selectedItem.paint.id;
     } else {
-      step.paintId = undefined;
+      // Zoek in global paints
+      const globalMatch = this.globalPaints().find(p => p.name.toLowerCase() === step.colour.toLowerCase());
+      if (globalMatch) {
+        step.paintId = globalMatch.id;
+      } else {
+        step.paintId = undefined;
+      }
     }
   }
 
