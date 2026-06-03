@@ -49,7 +49,10 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireClaim("isAdmin", "true"));
+});
 
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
@@ -141,6 +144,7 @@ app.MapPost("/users", async (AppDbContext db, User user) =>
     var existingUser = await db.Users.AnyAsync(u => u.Username == user.Username || u.Email == user.Email);
     if (existingUser) return Results.BadRequest("Gebruikersnaam of e-mail is al in gebruik.");
 
+    user.IsAdmin = false; // Voorkom dat gebruikers zichzelf admin maken bij registratie
     db.Users.Add(user);
     await db.SaveChangesAsync();
     return Results.Created($"/users/{user.Id}", user);
@@ -391,6 +395,6 @@ app.MapPost("/global-paints/import", async (AppDbContext db, List<GlobalPaint> p
     }
     await db.SaveChangesAsync();
     return Results.Ok(new { message = $"{paints.Count} verfjes verwerkt." });
-}).WithName("ImportGlobalPaints").RequireAuthorization(); // Optioneel: .RequireAdmin() als dat bestaat
+}).WithName("ImportGlobalPaints").RequireAuthorization("AdminOnly");
 
 app.Run();
