@@ -99,6 +99,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseCors();
 
 app.UseAuthentication();
@@ -107,7 +108,7 @@ app.UseAuthorization();
 app.MapGet("/hello-world", () => "Hello world!");
 
 // Login
-app.MapPost("/login", async (AppDbContext db, User loginUser, IConfiguration config) =>
+app.MapPost("/login", async (AppDbContext db, User loginUser, IConfiguration config, ILogger<Program> logger) =>
 {
     var user = await db.Users.FirstOrDefaultAsync(u => u.Username == loginUser.Username && u.Password == loginUser.Password);
     if (user is null) return Results.Unauthorized();
@@ -122,6 +123,9 @@ app.MapPost("/login", async (AppDbContext db, User loginUser, IConfiguration con
 
     var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]!));
     var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+    var claimsIdentity = new ClaimsIdentity(claims);
+    logger.LogInformation("Login: Claims voor gebruiker {Username}: {Claims}", user.Username, string.Join(", ", claims.Select(c => $"{c.Type}={c.Value}")));
 
     var token = new JwtSecurityToken(
         issuer: config["Jwt:Issuer"],
@@ -281,6 +285,7 @@ app.MapPut("/paint-schemes/{id}", async (AppDbContext db, int id, PaintScheme up
     scheme.Name = updatedScheme.Name;
     scheme.Description = updatedScheme.Description;
     scheme.Tags = updatedScheme.Tags;
+    scheme.ImageUrl = updatedScheme.ImageUrl;
     
     // Update steps
     db.Steps.RemoveRange(scheme.Steps);
@@ -296,6 +301,50 @@ app.MapPut("/paint-schemes/{id}", async (AppDbContext db, int id, PaintScheme up
         return Results.Problem($"Fout bij bijwerken: {ex.Message}");
     }
 }).WithName("UpdatePaintScheme").RequireAuthorization();
+
+// Upload Image
+app.MapPost("/upload", async (IFormFile file, IWebHostEnvironment env, ILogger<Program> logger) =>
+{
+    try
+    {
+        if (file == null || file.Length == 0)
+        {
+            logger.LogWarning("UploadImage: Geen bestand geselecteerd of bestand is leeg.");
+            return Results.BadRequest("Geen bestand geselecteerd.");
+        }
+
+        if (string.IsNullOrEmpty(env.WebRootPath))
+        {
+            logger.LogError("UploadImage: env.WebRootPath is null of leeg. Zorg ervoor dat wwwroot bestaat.");
+            return Results.Problem("Server configuratie fout: wwwroot niet gevonden.");
+        }
+
+        var uploadsFolder = Path.Combine(env.WebRootPath, "uploads");
+        if (!Directory.Exists(uploadsFolder))
+        {
+            logger.LogInformation("UploadImage: Aanmaken van uploads map: {Path}", uploadsFolder);
+            Directory.CreateDirectory(uploadsFolder);
+        }
+
+        var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+        var filePath = Path.Combine(uploadsFolder, fileName);
+
+        logger.LogInformation("UploadImage: Bestand opslaan naar {Path}", filePath);
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        var imageUrl = $"/uploads/{fileName}";
+        logger.LogInformation("UploadImage: Bestand succesvol geüpload. URL: {Url}", imageUrl);
+        return Results.Ok(new { imageUrl });
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "UploadImage: Fout bij het uploaden van bestand.");
+        return Results.Problem($"Interne serverfout: {ex.Message}");
+    }
+}).WithName("UploadImage").RequireAuthorization().DisableAntiforgery();
 
 // Steps
 app.MapPost("/steps", async (AppDbContext db, Step step) =>

@@ -20,6 +20,7 @@ export interface PaintScheme {
   userId?: number;
   createdAt?: string;
   isStolen?: boolean;
+  imageUrl?: string;
   steps: Step[];
 }
 
@@ -53,5 +54,11 @@ export class PaintSchemeService {
 
   updatePaintScheme(id: number, scheme: PaintScheme): Observable<PaintScheme> {
     return this.http.put<PaintScheme>(`${this.baseUrl}/paint-schemes/${id}`, scheme, { headers: this.getHeaders() });
+  }
+
+  uploadImage(file: File): Observable<{ imageUrl: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<{ imageUrl: string }>(`${this.baseUrl}/upload`, formData, { headers: this.getHeaders() });
   }
 }

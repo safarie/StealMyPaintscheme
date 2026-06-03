@@ -79,6 +79,7 @@ export class PaintSchemesComponent implements OnInit {
     const stolenScheme: PaintScheme = {
       name: scheme.name,
       description: scheme.description,
+      imageUrl: scheme.imageUrl,
       isStolen: true,
       tags: scheme.tags ? [...scheme.tags] : [],
       steps: scheme.steps.map(step => ({

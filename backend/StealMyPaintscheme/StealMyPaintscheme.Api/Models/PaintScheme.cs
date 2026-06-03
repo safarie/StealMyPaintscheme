@@ -20,4 +20,5 @@ public class PaintScheme
     
     public bool IsStolen { get; set; }
     
+    public string? ImageUrl { get; set; }
 }

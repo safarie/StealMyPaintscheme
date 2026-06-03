@@ -41,6 +41,8 @@ export class MyPaintSchemesComponent implements OnInit {
   description = '';
   tagsInput = '';
   steps: Step[] = [];
+  selectedFile: File | null = null;
+  imageUrl = '';
   editingSchemeId = signal<number | null>(null);
 
   ngOnInit() {
@@ -132,11 +134,16 @@ export class MyPaintSchemesComponent implements OnInit {
     this.steps.splice(index, 1);
   }
 
+  onFileSelected(event: any) {
+    this.selectedFile = event.target.files[0];
+  }
+
   editScheme(scheme: PaintScheme) {
     this.editingSchemeId.set(scheme.id || null);
     this.name = scheme.name;
     this.description = scheme.description || '';
     this.tagsInput = scheme.tags ? scheme.tags.join(', ') : '';
+    this.imageUrl = scheme.imageUrl || '';
     // Deep copy steps to avoid direct modification
     this.steps = scheme.steps.map(s => ({ ...s }));
 
@@ -150,6 +157,8 @@ export class MyPaintSchemesComponent implements OnInit {
     this.description = '';
     this.tagsInput = '';
     this.steps = [];
+    this.selectedFile = null;
+    this.imageUrl = '';
   }
 
   onSubmit(event: Event) {
@@ -172,9 +181,26 @@ export class MyPaintSchemesComponent implements OnInit {
       }
     }
 
+    if (this.selectedFile) {
+      this.paintSchemeService.uploadImage(this.selectedFile).subscribe({
+        next: (response) => {
+          this.saveScheme(response.imageUrl);
+        },
+        error: (err) => {
+          console.error('Error uploading image:', err);
+          alert('Fout bij het uploaden van de afbeelding.');
+        }
+      });
+    } else {
+      this.saveScheme(this.imageUrl);
+    }
+  }
+
+  saveScheme(imageUrl: string) {
     const schemeData: PaintScheme = {
       name: this.name,
       description: this.description,
+      imageUrl: imageUrl,
       tags: this.tagsInput ? this.tagsInput.split(',').map(t => t.trim()).filter(t => t !== '') : [],
       steps: this.steps.map(s => {
         const { id, ...rest } = s; // Verwijder id bij nieuwe stappen of bij update (backend vervangt ze)
