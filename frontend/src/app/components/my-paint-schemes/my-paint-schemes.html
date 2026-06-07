@@ -33,7 +33,7 @@
         id="scheme-tags"
         name="tags"
         [(ngModel)]="tagsInput"
-        placeholder="e.g. Space Marines, Necrons, Vehicles"
+        placeholder="e.g. Space Marines, Necrons"
       />
     </div>
 
@@ -54,63 +54,96 @@
     </div>
 
     <div class="steps-section">
-      <h3>Steps</h3>
-      <div class="steps-container">
-        @for (step of steps; track $index) {
-          <div class="step-box relative">
+      <h3>Steps by Part</h3>
+      <div class="parts-container">
+        @for (part of parts; track $index; let $partIndex = $index) {
+          <div class="part-box relative">
             <button
               type="button"
-              (click)="removeStep($index)"
+              (click)="removePart($partIndex)"
               class="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm transition-colors"
-              title="Remove Step"
+              title="Remove Part"
             >
               ×
             </button>
-            <h4>Step {{ $index + 1 }}</h4>
-            <div class="step-inputs">
-              <div class="form-group">
-                <label>Where</label>
-                <input type="text" [(ngModel)]="step.where" [name]="'where' + $index" placeholder="e.g. Armour" required />
-              </div>
-              <div class="form-group">
-                <label>Colour</label>
-                <div class="color-input-wrapper">
-                  <input
-                    type="text"
-                    [(ngModel)]="step.colour"
-                    [name]="'colour' + $index"
-                    placeholder="e.g. Blue"
-                    list="paint-suggestions"
-                    (input)="onColourInput($index)"
-                    required
-                  />
-                  @let selectedItem = inventory().find(item => item.paint?.name === step.colour);
-                  @let globalPaint = globalPaints().find(p => p.name === step.colour);
-                  @if (selectedItem?.paint?.rgb) {
-                    <div class="color-preview form-preview" [style.background-color]="formatRGB(selectedItem?.paint?.rgb)" [title]="selectedItem?.paint?.rgb"></div>
-                  } @else if (globalPaint?.rgb) {
-                    <div class="color-preview form-preview" [style.background-color]="formatRGB(globalPaint?.rgb)" [title]="globalPaint?.rgb"></div>
-                  }
+            <div class="form-group">
+              <label>What are you painting?</label>
+              <input
+                type="text"
+                [(ngModel)]="part.name"
+                [name]="'partName' + $partIndex"
+                placeholder="e.g. Armour, Weapon, Skin"
+                required
+              />
+            </div>
+
+            <div class="part-steps">
+              @for (step of part.steps; track $index; let $stepIndex = $index) {
+                <div class="step-box relative">
+                  <button
+                    type="button"
+                    (click)="removeStepFromPart($partIndex, $stepIndex)"
+                    class="absolute top-2 right-2 bg-red-400 hover:bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs transition-colors"
+                    title="Remove Step"
+                  >
+                    ×
+                  </button>
+                  <h5>Step {{ $stepIndex + 1 }}</h5>
+                  <div class="step-inputs">
+                    <div class="form-group">
+                      <label>Colour</label>
+                      <div class="color-input-wrapper">
+                        <input
+                          type="text"
+                          [(ngModel)]="step.colour"
+                          [name]="'colour' + $partIndex + '_' + $stepIndex"
+                          placeholder="e.g. Blue"
+                          list="paint-suggestions"
+                          (input)="onColourInput($partIndex, $stepIndex)"
+                          required
+                        />
+                        @let selectedItem = inventory().find(item => item.paint?.name === step.colour);
+                        @let globalPaint = globalPaints().find(p => p.name === step.colour);
+                        @if (selectedItem?.paint?.rgb) {
+                          <div class="color-preview form-preview" [style.background-color]="formatRGB(selectedItem?.paint?.rgb)" [title]="selectedItem?.paint?.rgb"></div>
+                        } @else if (globalPaint?.rgb) {
+                          <div class="color-preview form-preview" [style.background-color]="formatRGB(globalPaint?.rgb)" [title]="globalPaint?.rgb"></div>
+                        }
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label>Painting Technique</label>
+                      <input
+                        type="text"
+                        [(ngModel)]="step.paintingTechnique"
+                        [name]="'tech' + $partIndex + '_' + $stepIndex"
+                        placeholder="e.g. Basecoat"
+                        required
+                      />
+                    </div>
+                  </div>
                 </div>
-                <datalist id="paint-suggestions">
-                  @for (item of inventory(); track item.id) {
-                    <option [value]="item.paint?.name">{{ item.paint?.maker }} (In Inventory)</option>
-                  }
-                  @for (paint of globalPaints(); track paint.id) {
-                    <option [value]="paint.name + ' (' + paint.type + ')'">{{ paint.maker }}</option>
-                  }
-                </datalist>
-              </div>
-              <div class="form-group">
-                <label>Painting Technique</label>
-                <input type="text" [(ngModel)]="step.paintingTechnique" [name]="'tech' + $index" placeholder="e.g. Basecoat" required />
-              </div>
+              }
+              <button type="button" (click)="addStepToPart($partIndex)" class="btn-add-step">
+                + Add Step to {{ part.name || 'Part' }}
+              </button>
             </div>
           </div>
         }
       </div>
 
-      <button type="button" (click)="addStep()" class="secondary">Add Step</button>
+      <button type="button" (click)="addPart()" class="btn-add-part">
+        + Add Part
+      </button>
+
+      <datalist id="paint-suggestions">
+        @for (item of inventory(); track item.id) {
+          <option [value]="item.paint?.name">{{ item.paint?.maker }} (In Inventory)</option>
+        }
+        @for (paint of globalPaints(); track paint.id) {
+          <option [value]="paint.name + ' (' + paint.type + ')'">{{ paint.maker }}</option>
+        }
+      </datalist>
     </div>
 
     <div class="form-actions" style="margin-top: 20px; display: flex; gap: 10px;">
@@ -239,40 +272,43 @@
         <p class="scheme-desc">{{ scheme.description }}</p>
 
         <div class="details-section">
-          <h3>Steps</h3>
-          <div class="steps-grid">
-            @for (step of scheme.steps; track $index) {
-              <div class="step-detail-card">
-                <div class="step-number">{{ $index + 1 }}</div>
-                <div class="step-info">
-                  <div class="info-item">
-                    <span class="label">Where:</span>
-                    <span class="value">{{ step.where }}</span>
-                  </div>
-                  <div class="info-item">
-                    <span class="label">Colour:</span>
-                    <div class="value-container">
-                      @if (step.paint?.rgb) {
-                        <div class="color-preview" [style.background-color]="formatRGB(step.paint?.rgb)" [title]="step.paint?.rgb"></div>
-                      }
-                      <span class="value">{{ step.colour }}</span>
-                      @if (isLoggedIn() && step.paintId) {
-                        @if (hasPaintInInventory(step.paintId)) {
-                          <span class="inventory-status owned" title="You have this paint">✓</span>
-                        } @else {
-                          <span class="inventory-status missing" title="You don't have this paint">✗</span>
+          <h3>Steps by Part</h3>
+          <div class="parts-container">
+            @for (group of groupedSteps(); track group.where) {
+              <div class="part-group">
+                <h4 class="part-title">{{ group.where }}</h4>
+                <div class="steps-grid">
+                  @for (step of group.steps; track $index) {
+                    <div class="step-detail-card">
+                      <div class="step-number">{{ $index + 1 }}</div>
+                      <div class="step-info">
+                        <div class="info-item">
+                          <span class="label">Colour:</span>
+                          <div class="value-container">
+                            @if (step.paint?.rgb) {
+                              <div class="color-preview" [style.background-color]="formatRGB(step.paint?.rgb)" [title]="step.paint?.rgb"></div>
+                            }
+                            <span class="value">{{ step.colour }}</span>
+                            @if (isLoggedIn() && step.paintId) {
+                              @if (hasPaintInInventory(step.paintId)) {
+                                <span class="inventory-status owned" title="You have this paint">✓</span>
+                              } @else {
+                                <span class="inventory-status missing" title="You don't have this paint">✗</span>
+                              }
+                            }
+                          </div>
+                        </div>
+                        <div class="info-item">
+                          <span class="label">Technique:</span>
+                          <span class="value">{{ step.paintingTechnique }}</span>
+                        </div>
+                        @if (step.paint) {
+                          <div class="info-item">
+                            <span class="label">Paint:</span>
+                            <span class="value">{{ step.paint.name }} ({{ step.paint.maker }})</span>
+                          </div>
                         }
-                      }
-                    </div>
-                  </div>
-                  <div class="info-item">
-                    <span class="label">Technique:</span>
-                    <span class="value">{{ step.paintingTechnique }}</span>
-                  </div>
-                  @if (step.paint) {
-                    <div class="info-item">
-                      <span class="label">Paint:</span>
-                      <span class="value">{{ step.paint.name }} ({{ step.paint.maker }})</span>
+                      </div>
                     </div>
                   }
                 </div>

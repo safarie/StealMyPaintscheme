@@ -23,6 +23,22 @@ export class MyPaintSchemesComponent implements OnInit {
   currentUserId = this.authService.userId;
   selectedScheme = signal<PaintScheme | null>(null);
 
+  groupedSteps = computed(() => {
+    const scheme = this.selectedScheme();
+    if (!scheme) return [];
+
+    const groups: { where: string; steps: Step[] }[] = [];
+    scheme.steps.forEach(step => {
+      let group = groups.find(g => g.where.toLowerCase() === step.where.toLowerCase());
+      if (!group) {
+        group = { where: step.where, steps: [] };
+        groups.push(group);
+      }
+      group.steps.push(step);
+    });
+    return groups;
+  });
+
   ownSchemes = computed(() =>
     this.paintSchemes().filter(s =>
       s.userId === this.currentUserId() &&
@@ -44,6 +60,9 @@ export class MyPaintSchemesComponent implements OnInit {
   selectedFile: File | null = null;
   imageUrl = '';
   editingSchemeId = signal<number | null>(null);
+
+  // Hulpselectie voor formulier om stappen te groeperen op onderdeel ('where')
+  parts: { name: string; steps: Step[] }[] = [];
 
   ngOnInit() {
     this.loadSchemes();
@@ -74,13 +93,36 @@ export class MyPaintSchemesComponent implements OnInit {
     });
   }
 
-  addStep() {
-    this.steps.push({
-      where: '',
+  addPart() {
+    this.parts.push({
+      name: '',
+      steps: [{
+        where: '',
+        colour: '',
+        paintingTechnique: '',
+        paintId: undefined
+      }]
+    });
+  }
+
+  removePart(index: number) {
+    this.parts.splice(index, 1);
+  }
+
+  addStepToPart(partIndex: number) {
+    this.parts[partIndex].steps.push({
+      where: this.parts[partIndex].name,
       colour: '',
       paintingTechnique: '',
       paintId: undefined
     });
+  }
+
+  removeStepFromPart(partIndex: number, stepIndex: number) {
+    this.parts[partIndex].steps.splice(stepIndex, 1);
+    if (this.parts[partIndex].steps.length === 0) {
+      this.removePart(partIndex);
+    }
   }
 
   formatRGB(rgb: string | undefined): string {
@@ -92,8 +134,8 @@ export class MyPaintSchemesComponent implements OnInit {
     return rgb;
   }
 
-  onColourInput(index: number) {
-    const step = this.steps[index];
+  onColourInput(partIndex: number, stepIndex: number) {
+    const step = this.parts[partIndex].steps[stepIndex];
 
     // Check of de input de vorm "Naam (Type)" heeft, wat gebeurt bij een selectie uit de datalist
     const selectionMatch = step.colour.match(/^(.+) \((.+)\)$/);
@@ -116,7 +158,7 @@ export class MyPaintSchemesComponent implements OnInit {
     }
 
     // Zoek in eigen inventory
-    const selectedItem = this.inventory().find(item => item.paint?.name === step.colour);
+    const selectedItem = this.inventory().find(item => item.paint?.name.toLowerCase() === step.colour.toLowerCase());
     if (selectedItem && selectedItem.paint) {
       step.paintId = selectedItem.paint.id;
     } else {
@@ -131,7 +173,7 @@ export class MyPaintSchemesComponent implements OnInit {
   }
 
   removeStep(index: number) {
-    this.steps.splice(index, 1);
+    // Wordt niet meer direct gebruikt, vervangen door removeStepFromPart
   }
 
   onFileSelected(event: any) {
@@ -144,8 +186,31 @@ export class MyPaintSchemesComponent implements OnInit {
     this.description = scheme.description || '';
     this.tagsInput = scheme.tags ? scheme.tags.join(', ') : '';
     this.imageUrl = scheme.imageUrl || '';
-    // Deep copy steps to avoid direct modification
-    this.steps = scheme.steps.map(s => ({ ...s }));
+
+    // Groepeer stappen voor de UI
+    const groups: { name: string; steps: Step[] }[] = [];
+    if (scheme.steps && scheme.steps.length > 0) {
+      scheme.steps.forEach(step => {
+        let group = groups.find(g => g.name.toLowerCase() === (step.where || '').toLowerCase());
+        if (!group) {
+          group = { name: step.where, steps: [] };
+          groups.push(group);
+        }
+        group.steps.push({ ...step });
+      });
+    } else {
+      // Fallback als er geen stappen zijn (zou niet moeten gebeuren)
+      groups.push({
+        name: '',
+        steps: [{
+          where: '',
+          colour: '',
+          paintingTechnique: '',
+          paintId: undefined
+        }]
+      });
+    }
+    this.parts = groups;
 
     // Scroll naar formulier
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -157,6 +222,7 @@ export class MyPaintSchemesComponent implements OnInit {
     this.description = '';
     this.tagsInput = '';
     this.steps = [];
+    this.parts = [];
     this.selectedFile = null;
     this.imageUrl = '';
   }
@@ -169,15 +235,28 @@ export class MyPaintSchemesComponent implements OnInit {
       return;
     }
 
-    if (this.steps.length === 0) {
-      alert('Voeg minimaal één stap toe.');
+    if (this.parts.length === 0) {
+      alert('Voeg minimaal één onderdeel toe.');
       return;
     }
 
-    for (const step of this.steps) {
-      if (!step.where || !step.colour || !step.paintingTechnique) {
-        alert('Alle velden in elke stap (Waar, Kleur, Techniek) moeten zijn ingevuld.');
+    // Valideer parts en steps
+    for (const part of this.parts) {
+      if (!part.name) {
+        alert('Alle onderdelen moeten een naam hebben.');
         return;
+      }
+      if (part.steps.length === 0) {
+        alert(`Onderdeel "${part.name}" heeft geen stappen.`);
+        return;
+      }
+      for (const step of part.steps) {
+        if (!step.colour || !step.paintingTechnique) {
+          alert(`Niet alle velden zijn ingevuld voor een stap in "${part.name}".`);
+          return;
+        }
+        // Zorg dat 'where' overeenkomt met de part naam
+        step.where = part.name;
       }
     }
 
@@ -197,15 +276,24 @@ export class MyPaintSchemesComponent implements OnInit {
   }
 
   saveScheme(imageUrl: string) {
+    // Platstaan van parts naar steps voor API
+    const flattenedSteps: Step[] = [];
+    this.parts.forEach(part => {
+      part.steps.forEach(step => {
+        const { id, ...rest } = step;
+        flattenedSteps.push({
+          ...rest,
+          where: part.name
+        } as Step);
+      });
+    });
+
     const schemeData: PaintScheme = {
       name: this.name,
       description: this.description,
       imageUrl: imageUrl,
       tags: this.tagsInput ? this.tagsInput.split(',').map(t => t.trim()).filter(t => t !== '') : [],
-      steps: this.steps.map(s => {
-        const { id, ...rest } = s; // Verwijder id bij nieuwe stappen of bij update (backend vervangt ze)
-        return rest as Step;
-      })
+      steps: flattenedSteps
     };
 
     const editId = this.editingSchemeId();

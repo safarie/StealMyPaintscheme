@@ -24,6 +24,22 @@ export class PaintSchemesComponent implements OnInit {
   searchTerm = signal<string>('');
   selectedScheme = signal<PaintScheme | null>(null);
 
+  groupedSteps = computed(() => {
+    const scheme = this.selectedScheme();
+    if (!scheme) return [];
+
+    const groups: { where: string; steps: any[] }[] = [];
+    scheme.steps.forEach(step => {
+      let group = groups.find(g => g.where.toLowerCase() === step.where.toLowerCase());
+      if (!group) {
+        group = { where: step.where, steps: [] };
+        groups.push(group);
+      }
+      group.steps.push(step);
+    });
+    return groups;
+  });
+
   filteredSchemes = computed(() => {
     const term = this.searchTerm().toLowerCase();
     const schemes = this.paintSchemes();

@@ -340,10 +340,35 @@ button.success:hover {
 }
 
 .details-section h3 {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   color: #2c3e50;
   border-left: 4px solid #3498db;
   padding-left: 0.75rem;
+  text-align: left;
+}
+
+.parts-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.part-group {
+  border: 1px solid #edf2f7;
+  border-radius: 12px;
+  padding: 1.5rem;
+  background-color: #ffffff;
+}
+
+.part-title {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #2d3748;
+  font-size: 1.2rem;
+  font-weight: 700;
+  border-bottom: 2px solid #edf2f7;
+  padding-bottom: 0.5rem;
+  text-transform: capitalize;
 }
 
 .steps-grid {

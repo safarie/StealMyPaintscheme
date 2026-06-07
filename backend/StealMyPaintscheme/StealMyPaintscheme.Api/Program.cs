@@ -107,7 +107,18 @@ app.MapGet("/hello-world", () => "Hello world!");
 app.MapPost("/login", async (AppDbContext db, User loginUser, IConfiguration config, ILogger<Program> logger) =>
 {
     var user = await db.Users.FirstOrDefaultAsync(u => u.Username == loginUser.Username);
-    if (user is null || !BCrypt.Net.BCrypt.Verify(loginUser.Password, user.Password)) 
+    
+    bool isValid = false;
+    try 
+    {
+        isValid = user is not null && BCrypt.Net.BCrypt.Verify(loginUser.Password, user.Password);
+    }
+    catch (BCrypt.Net.SaltParseException)
+    {
+        logger.LogWarning("Ongeldige password hash gevonden voor gebruiker {Username}", loginUser.Username);
+    }
+
+    if (!isValid || user is null) 
     {
         return Results.Unauthorized();
     }
@@ -202,8 +213,25 @@ app.MapPost("/paint-schemes", async (AppDbContext db, PaintScheme paintScheme, C
         paintScheme.UserId = userId;
         paintScheme.CreatedAt = DateTime.UtcNow;
         
-        // Zorg ervoor dat de steps ook gekoppeld zijn aan de juiste userId of andere velden indien nodig
-        // In dit geval worden ze als part of the aggregate opgeslagen.
+        // Valideer PaintId's in steps om FK violations te voorkomen
+        if (paintScheme.Steps != null)
+        {
+            var validPaintIds = await db.Paints.Where(p => p.UserId == userId).Select(p => p.Id).ToListAsync();
+            var globalPaintIds = await db.GlobalPaints.Select(p => p.Id).ToListAsync();
+
+            foreach (var step in paintScheme.Steps)
+            {
+                if (step.PaintId.HasValue)
+                {
+                    // Als de PaintId niet in de eigen paints EN niet in de globale paints zit, zet hem op null
+                    if (!validPaintIds.Contains(step.PaintId.Value) && !globalPaintIds.Contains(step.PaintId.Value))
+                    {
+                        step.PaintId = null;
+                        step.Paint = null;
+                    }
+                }
+            }
+        }
         
         db.PaintSchemes.Add(paintScheme);
         await db.SaveChangesAsync();
@@ -315,6 +343,26 @@ app.MapPut("/paint-schemes/{id}", async (AppDbContext db, int id, PaintScheme up
     
     // Update steps
     db.Steps.RemoveRange(scheme.Steps);
+    
+    // Valideer PaintId's in nieuwe stappen om FK violations te voorkomen
+    if (updatedScheme.Steps != null)
+    {
+        var validPaintIds = await db.Paints.Where(p => p.UserId == userId).Select(p => p.Id).ToListAsync();
+        var globalPaintIds = await db.GlobalPaints.Select(p => p.Id).ToListAsync();
+
+        foreach (var step in updatedScheme.Steps)
+        {
+            if (step.PaintId.HasValue)
+            {
+                if (!validPaintIds.Contains(step.PaintId.Value) && !globalPaintIds.Contains(step.PaintId.Value))
+                {
+                    step.PaintId = null;
+                    step.Paint = null;
+                }
+            }
+            step.PaintSchemeId = scheme.Id;
+        }
+    }
     scheme.Steps = updatedScheme.Steps;
 
     try 

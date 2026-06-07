@@ -24,7 +24,7 @@ namespace StealMyPaintscheme.Api.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Username", "Password", "Email", "IsAdmin" },
-                values: new object[] { "admin", "admin", "admin@stealmypaintscheme.nl", true });
+                values: new object[] { "admin", "$2a$11$0WfJ9kZ2A8M6M0zI8V/XUeW/p0K.V8yX4n6D3L.yV7n9yX4n6D3L.", "admin@stealmypaintscheme.nl", true });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

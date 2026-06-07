@@ -85,40 +85,43 @@
         <p class="scheme-desc">{{ scheme.description }}</p>
 
         <div class="details-section">
-          <h3>Steps</h3>
-          <div class="steps-grid">
-            @for (step of scheme.steps; track $index) {
-              <div class="step-detail-card">
-                <div class="step-number">{{ $index + 1 }}</div>
-                <div class="step-info">
-                  <div class="info-item">
-                    <span class="label">Where:</span>
-                    <span class="value">{{ step.where }}</span>
-                  </div>
-                  <div class="info-item">
-                    <span class="label">Colour:</span>
-                    <div class="value-container">
-                      @if (step.paint?.rgb) {
-                        <div class="color-preview" [style.background-color]="formatRGB(step.paint?.rgb)" [title]="step.paint?.rgb"></div>
-                      }
-                      <span class="value">{{ step.colour }}</span>
-                      @if (isLoggedIn() && step.paintId) {
-                        @if (hasPaintInInventory(step.paintId)) {
-                          <span class="inventory-status owned" title="You have this paint">✓</span>
-                        } @else {
-                          <span class="inventory-status missing" title="You don't have this paint">✗</span>
+          <h3>Steps by Part</h3>
+          <div class="parts-container">
+            @for (group of groupedSteps(); track group.where) {
+              <div class="part-group">
+                <h4 class="part-title">{{ group.where }}</h4>
+                <div class="steps-grid">
+                  @for (step of group.steps; track $index) {
+                    <div class="step-detail-card">
+                      <div class="step-number">{{ $index + 1 }}</div>
+                      <div class="step-info">
+                        <div class="info-item">
+                          <span class="label">Colour:</span>
+                          <div class="value-container">
+                            @if (step.paint?.rgb) {
+                              <div class="color-preview" [style.background-color]="formatRGB(step.paint?.rgb)" [title]="step.paint?.rgb"></div>
+                            }
+                            <span class="value">{{ step.colour }}</span>
+                            @if (isLoggedIn() && step.paintId) {
+                              @if (hasPaintInInventory(step.paintId)) {
+                                <span class="inventory-status owned" title="You have this paint">✓</span>
+                              } @else {
+                                <span class="inventory-status missing" title="You don't have this paint">✗</span>
+                              }
+                            }
+                          </div>
+                        </div>
+                        <div class="info-item">
+                          <span class="label">Technique:</span>
+                          <span class="value">{{ step.paintingTechnique }}</span>
+                        </div>
+                        @if (step.paint) {
+                          <div class="info-item">
+                            <span class="label">Paint:</span>
+                            <span class="value">{{ step.paint.name }} ({{ step.paint.maker }})</span>
+                          </div>
                         }
-                      }
-                    </div>
-                  </div>
-                  <div class="info-item">
-                    <span class="label">Technique:</span>
-                    <span class="value">{{ step.paintingTechnique }}</span>
-                  </div>
-                  @if (step.paint) {
-                    <div class="info-item">
-                      <span class="label">Paint:</span>
-                      <span class="value">{{ step.paint.name }} ({{ step.paint.maker }})</span>
+                      </div>
                     </div>
                   }
                 </div>
