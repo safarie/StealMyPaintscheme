@@ -1,7 +1,10 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { InventoryService, InventoryItem, Paint, GlobalPaint } from '../../services/inventory.service';
+import { InventoryService } from '../../services/inventory.service';
+import {Paint} from "../../models/paint";
+import {InventoryItem} from '../../models/inventoryItem';
+import {GlobalPaint} from '../../models/globalPaint';
 
 @Component({
   selector: 'app-inventory',

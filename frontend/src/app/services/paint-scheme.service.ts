@@ -1,28 +1,7 @@
-﻿import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { Paint } from './inventory.service';
-
-export interface Step {
-  id?: number;
-  where: string;
-  colour: string;
-  paintingTechnique: string;
-  paintId?: number;
-  paint?: Paint;
-}
-
-export interface PaintScheme {
-  id?: number;
-  name: string;
-  description?: string;
-  tags?: string[];
-  userId?: number;
-  createdAt?: string;
-  isStolen?: boolean;
-  imageUrl?: string;
-  steps: Step[];
-}
+﻿import {inject, Injectable} from '@angular/core';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {PaintScheme} from '../models/paint.scheme';
 
 @Injectable({
   providedIn: 'root'

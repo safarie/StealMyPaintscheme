@@ -1,31 +1,9 @@
-﻿import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
-
-export interface Paint {
-  id?: number;
-  name: string;
-  type: string;
-  maker: string;
-  userId?: number;
-  rgb?: string;
-}
-
-export interface InventoryItem {
-  id?: number;
-  quantity: number;
-  paintId: number;
-  paint?: Paint;
-  userId?: number;
-}
-
-export interface GlobalPaint {
-  id: number;
-  name: string;
-  type: string;
-  maker: string;
-  rgb: string;
-}
+﻿import {inject, Injectable} from '@angular/core';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {Paint} from '../models/paint';
+import {InventoryItem} from '../models/inventoryItem';
+import {GlobalPaint} from '../models/globalPaint';
 
 @Injectable({
   providedIn: 'root'

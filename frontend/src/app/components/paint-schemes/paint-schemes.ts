@@ -1,8 +1,10 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { PaintSchemeService, PaintScheme } from '../../services/paint-scheme.service';
+import { PaintSchemeService } from '../../services/paint-scheme.service';
 import { AuthService } from '../../services/auth.service';
-import { InventoryService, InventoryItem } from '../../services/inventory.service';
+import { InventoryService } from '../../services/inventory.service';
+import {InventoryItem} from "../../models/inventoryItem";
+import {PaintScheme} from '../../models/paint.scheme';
 
 @Component({
   selector: 'app-paint-schemes',
