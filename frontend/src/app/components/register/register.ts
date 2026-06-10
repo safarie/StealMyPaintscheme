@@ -35,7 +35,7 @@ export class RegisterComponent {
       password: this.password
     };
 
-    this.http.post(`${this.baseUrl}/users`, user).subscribe({
+    this.http.post(`${this.baseUrl}/Users`, user).subscribe({
       next: () => {
         this.router.navigate(['/login']);
       },

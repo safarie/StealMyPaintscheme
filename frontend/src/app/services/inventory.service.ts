@@ -20,7 +20,7 @@ export class InventoryService {
   }
 
   getInventory(): Observable<InventoryItem[]> {
-    return this.http.get<InventoryItem[]>(`${this.baseUrl}/inventory-items`, { headers: this.getHeaders() });
+    return this.http.get<InventoryItem[]>(`${this.baseUrl}/Inventory`, { headers: this.getHeaders() });
   }
 
   getGlobalPaints(): Observable<GlobalPaint[]> {
@@ -28,18 +28,18 @@ export class InventoryService {
   }
 
   addPaint(paint: Paint): Observable<Paint> {
-    return this.http.post<Paint>(`${this.baseUrl}/paints`, paint, { headers: this.getHeaders() });
+    return this.http.post<Paint>(`${this.baseUrl}/Paints`, paint, { headers: this.getHeaders() });
   }
 
   addInventoryItem(item: InventoryItem): Observable<InventoryItem> {
-    return this.http.post<InventoryItem>(`${this.baseUrl}/inventory-items`, item, { headers: this.getHeaders() });
+    return this.http.post<InventoryItem>(`${this.baseUrl}/Inventory`, item, { headers: this.getHeaders() });
   }
 
   updateInventoryItem(id: number, item: InventoryItem): Observable<InventoryItem> {
-    return this.http.put<InventoryItem>(`${this.baseUrl}/inventory-items/${id}`, item, { headers: this.getHeaders() });
+    return this.http.put<InventoryItem>(`${this.baseUrl}/Inventory/${id}`, item, { headers: this.getHeaders() });
   }
 
   deleteInventoryItem(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/inventory-items/${id}`, { headers: this.getHeaders() });
+    return this.http.delete<void>(`${this.baseUrl}/Inventory/${id}`, { headers: this.getHeaders() });
   }
 }

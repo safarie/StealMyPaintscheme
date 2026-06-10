@@ -1,0 +1,53 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using StealMyPaintscheme.Api.Models;
+using StealMyPaintscheme.Api.Services;
+
+namespace StealMyPaintscheme.Api.Controllers;
+
+[ApiController]
+[Route("[controller]")]
+[Authorize]
+public class PaintsController : ControllerBase
+{
+    private readonly IPaintService _paintService;
+
+    public PaintsController(IPaintService paintService)
+    {
+        _paintService = paintService;
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreatePaint([FromBody] Paint paint)
+    {
+        var userIdClaim = User.FindFirst("userId")?.Value;
+        if (userIdClaim == null || !int.TryParse(userIdClaim, out var userId))
+        {
+            return Unauthorized();
+        }
+
+        var result = await _paintService.GetOrCreatePaintAsync(paint, userId);
+        
+        // Als het ID al bestond, was het een bestaande verf, maar we kunnen nog steeds 201 of 200 sturen.
+        // In de oorspronkelijke code werd Ok(existingPaint) teruggestuurd bij bestaande verf.
+        if (result.Id != 0 && result.Id != paint.Id)
+        {
+             return Ok(result);
+        }
+
+        return CreatedAtAction(nameof(CreatePaint), new { id = result.Id }, result);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetPaints()
+    {
+        var userIdClaim = User.FindFirst("userId")?.Value;
+        if (userIdClaim == null || !int.TryParse(userIdClaim, out var userId))
+        {
+            return Unauthorized();
+        }
+
+        var paints = await _paintService.GetUserPaintsAsync(userId);
+        return Ok(paints);
+    }
+}

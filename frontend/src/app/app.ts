@@ -54,7 +54,7 @@ export class App {
 
   protected createUser() {
     const user = { username: this.userName(), email: this.userEmail() };
-    this.http.post(`${this.baseUrl}/users`, user).subscribe({
+    this.http.post(`${this.baseUrl}/Users`, user).subscribe({
       next: (res: any) => this.responseMessage.set(`User aangemaakt met ID: ${res.id}`),
       error: (err) => this.handleError(err)
     });
@@ -62,7 +62,7 @@ export class App {
 
   protected createPaint() {
     const paint = { name: this.paintName(), type: this.paintType(), maker: this.paintMaker() };
-    this.http.post(`${this.baseUrl}/paints`, paint).subscribe({
+    this.http.post(`${this.baseUrl}/Paints`, paint).subscribe({
       next: (res: any) => this.responseMessage.set(`Paint aangemaakt met ID: ${res.id}`),
       error: (err) => this.handleError(err)
     });
@@ -81,15 +81,7 @@ export class App {
   }
 
   protected createStep() {
-    const step = {
-      technique: this.stepTechnique(),
-      paintId: this.stepPaintId(),
-      paintSchemeId: this.stepSchemeId()
-    };
-    this.http.post(`${this.baseUrl}/steps`, step).subscribe({
-      next: (res: any) => this.responseMessage.set(`Step aangemaakt met ID: ${res.id}`),
-      error: (err) => this.handleError(err)
-    });
+    this.responseMessage.set('Stappen worden direct via het PaintScheme opgeslagen.');
   }
 
   protected createInventoryItem() {
@@ -98,7 +90,7 @@ export class App {
       paintId: this.inventoryPaintId(),
       userId: this.inventoryUserId()
     };
-    this.http.post(`${this.baseUrl}/inventory-items`, item).subscribe({
+    this.http.post(`${this.baseUrl}/Inventory`, item).subscribe({
       next: (res: any) => this.responseMessage.set(`InventoryItem aangemaakt met ID: ${res.id}`),
       error: (err) => this.handleError(err)
     });

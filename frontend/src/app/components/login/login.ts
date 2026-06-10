@@ -29,7 +29,7 @@ export class LoginComponent {
       password: this.password
     };
 
-    this.http.post(`${this.baseUrl}/login`, loginData).subscribe({
+    this.http.post(`${this.baseUrl}/Auth/login`, loginData).subscribe({
       next: (res: any) => {
         if (res.token) {
           this.authService.login(res.token);
@@ -38,7 +38,9 @@ export class LoginComponent {
       },
       error: (err) => {
         console.error('Login error:', err);
-        this.errorMessage.set('Invalid username or password.');
+        // Gebruik de friendlyMessage van de interceptor als die bestaat
+        const message = err.friendlyMessage || 'Ongeldige gebruikersnaam of wachtwoord.';
+        this.errorMessage.set(message);
       }
     });
   }

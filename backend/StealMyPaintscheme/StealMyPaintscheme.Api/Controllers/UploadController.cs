@@ -1,0 +1,92 @@
+﻿using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace StealMyPaintscheme.Api.Controllers;
+
+[ApiController]
+[Route("[controller]")]
+[Authorize]
+public class UploadController : ControllerBase
+{
+    private readonly IWebHostEnvironment _env;
+    private readonly ILogger<UploadController> _logger;
+    // Dependency Injection
+    public UploadController(IWebHostEnvironment env, ILogger<UploadController> logger)
+    {
+        _env = env;
+        _logger = logger;
+    }
+
+    [HttpPost]
+    [IgnoreAntiforgeryToken]
+    public async Task<IActionResult> UploadImage(IFormFile file)
+    {
+        try
+        {
+            if (file == null || file.Length == 0)
+            {
+                _logger.LogWarning("UploadImage: Geen bestand geselecteerd of bestand is leeg.");
+                return BadRequest("Geen bestand geselecteerd.");
+            }
+
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp", ".gif" };
+            var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+            if (!allowedExtensions.Contains(extension))
+            {
+                _logger.LogWarning("UploadImage: Geblokkeerde bestandsextensie {Extension}", extension);
+                return BadRequest("Alleen afbeeldingen toegestaan (.jpg, .jpeg, .png, .webp, .gif).");
+            }
+
+            var header = new byte[12];
+            using (var peek = file.OpenReadStream())
+            {
+                await peek.ReadAsync(header, 0, header.Length);
+            }
+
+            bool validMagic =
+                (header[0] == 0xFF && header[1] == 0xD8 && header[2] == 0xFF) ||
+                (header[0] == 0x89 && header[1] == 0x50 && header[2] == 0x4E && header[3] == 0x47) ||
+                (header[0] == 0x47 && header[1] == 0x49 && header[2] == 0x46 && header[3] == 0x38) ||
+                (header[0] == 0x52 && header[1] == 0x49 && header[2] == 0x46 && header[3] == 0x46 &&
+                 header[8] == 0x57 && header[9] == 0x45 && header[10] == 0x42 && header[11] == 0x50);
+
+            if (!validMagic)
+            {
+                _logger.LogWarning("UploadImage: Magic bytes komen niet overeen met een toegestaan afbeeldingsformaat.");
+                return BadRequest("Bestandsinhoud komt niet overeen met een afbeelding.");
+            }
+
+            if (string.IsNullOrEmpty(_env.WebRootPath))
+            {
+                _logger.LogError("UploadImage: env.WebRootPath is null of leeg. Zorg ervoor dat wwwroot bestaat.");
+                return Problem("Server configuratie fout: wwwroot niet gevonden.");
+            }
+
+            var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads");
+            if (!Directory.Exists(uploadsFolder))
+            {
+                _logger.LogInformation("UploadImage: Aanmaken van uploads map: {Path}", uploadsFolder);
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+            var filePath = Path.Combine(uploadsFolder, fileName);
+
+            _logger.LogInformation("UploadImage: Bestand opslaan naar {Path}", filePath);
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            var imageUrl = $"/uploads/{fileName}";
+            _logger.LogInformation("UploadImage: Bestand succesvol geüpload. URL: {Url}", imageUrl);
+            return Ok(new { imageUrl });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "UploadImage: Fout bij het uploaden van bestand.");
+            return Problem($"Interne serverfout: {ex.Message}");
+        }
+    }
+}

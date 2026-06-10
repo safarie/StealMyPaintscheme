@@ -38,6 +38,6 @@ export class PaintSchemeService {
   uploadImage(file: File): Observable<{ imageUrl: string }> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.http.post<{ imageUrl: string }>(`${this.baseUrl}/upload`, formData, { headers: this.getHeaders() });
+    return this.http.post<{ imageUrl: string }>(`${this.baseUrl}/Upload`, formData, { headers: this.getHeaders() });
   }
 }
