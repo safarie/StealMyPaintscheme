@@ -18,6 +18,9 @@ public class Step
     // Relation to Paint (optional for now, as user requested)
     public int? PaintId { get; set; }
     public Paint? Paint { get; set; }
+
+    public int? GlobalPaintId { get; set; }
+    public GlobalPaint? GlobalPaint { get; set; }
     
     // Relation to PaintScheme
     public int? PaintSchemeId { get; set; }

@@ -39,7 +39,18 @@ public class PaintSchemeService : IPaintSchemeService
                 {
                     if (step.PaintId.HasValue)
                     {
-                        if (!validPaintIds.Contains(step.PaintId.Value) && !globalPaintIds.Contains(step.PaintId.Value))
+                        if (validPaintIds.Contains(step.PaintId.Value))
+                        {
+                            // It's a user paint, leave as is
+                        }
+                        else if (globalPaintIds.Contains(step.PaintId.Value))
+                        {
+                            // It's a global paint, move ID to GlobalPaintId
+                            step.GlobalPaintId = step.PaintId;
+                            step.PaintId = null;
+                            step.Paint = null;
+                        }
+                        else
                         {
                             step.PaintId = null;
                             step.Paint = null;
@@ -114,7 +125,18 @@ public class PaintSchemeService : IPaintSchemeService
             {
                 if (step.PaintId.HasValue)
                 {
-                    if (!validPaintIds.Contains(step.PaintId.Value) && !globalPaintIds.Contains(step.PaintId.Value))
+                    if (validPaintIds.Contains(step.PaintId.Value))
+                    {
+                        // User paint
+                    }
+                    else if (globalPaintIds.Contains(step.PaintId.Value))
+                    {
+                        // Global paint
+                        step.GlobalPaintId = step.PaintId;
+                        step.PaintId = null;
+                        step.Paint = null;
+                    }
+                    else
                     {
                         step.PaintId = null;
                         step.Paint = null;

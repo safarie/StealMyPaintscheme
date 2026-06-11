@@ -29,6 +29,8 @@ public class PaintSchemeRepository : IPaintSchemeRepository
         return await _db.PaintSchemes
             .Include(ps => ps.Steps)
             .ThenInclude(s => s.Paint)
+            .Include(ps => ps.Steps)
+            .ThenInclude(s => s.GlobalPaint)
             .ToListAsync();
     }
 
