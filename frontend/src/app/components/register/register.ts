@@ -1,7 +1,8 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { Subject, debounceTime, distinctUntilChanged, switchMap, Subscription, of } from 'rxjs';
 
 @Component({
   selector: 'app-register',
@@ -10,7 +11,7 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit, OnDestroy {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
   private readonly baseUrl = 'http://localhost:5166';
@@ -20,6 +21,46 @@ export class RegisterComponent {
   protected password = '';
   protected confirmPassword = '';
   protected errorMessage = signal<string | null>(null);
+
+  protected usernameAvailable = signal<boolean | null>(null);
+  protected isCheckingUsername = signal<boolean>(false);
+
+  private usernameSubject = new Subject<string>();
+  private usernameSubscription?: Subscription;
+
+  ngOnInit() {
+    this.usernameSubscription = this.usernameSubject.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      switchMap(username => {
+        if (!username || username.length < 3) {
+          this.usernameAvailable.set(null);
+          return of(null);
+        }
+        this.isCheckingUsername.set(true);
+        return this.http.get<{available: boolean}>(`${this.baseUrl}/Users/check-username?username=${username}`);
+      })
+    ).subscribe({
+      next: (response) => {
+        this.isCheckingUsername.set(false);
+        if (response) {
+          this.usernameAvailable.set(response.available);
+        }
+      },
+      error: () => {
+        this.isCheckingUsername.set(false);
+        this.usernameAvailable.set(null);
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.usernameSubscription?.unsubscribe();
+  }
+
+  protected onUsernameChange() {
+    this.usernameSubject.next(this.username);
+  }
 
   protected onRegister(event: Event) {
     event.preventDefault();

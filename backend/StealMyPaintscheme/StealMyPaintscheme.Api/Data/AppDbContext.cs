@@ -16,4 +16,11 @@ public class AppDbContext : DbContext
     public DbSet<InventoryItem> InventoryItems => Set<InventoryItem>();
     public DbSet<PaintDatabase> PaintDatabases => Set<PaintDatabase>();
     public DbSet<GlobalPaint> GlobalPaints => Set<GlobalPaint>();
+    
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Username)
+            .IsUnique();
+    }
 }

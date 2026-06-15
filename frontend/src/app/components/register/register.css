@@ -76,3 +76,46 @@
 .auth-form p {
   text-align: center;
 }
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-wrapper input {
+  width: 100%;
+}
+
+.status-icon {
+  position: absolute;
+  right: 12px;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.status-icon.available {
+  color: #2ecc71;
+}
+
+.status-icon.unavailable {
+  color: #e74c3c;
+}
+
+.status-icon.loading {
+  color: #95a5a6;
+}
+
+input.available {
+  border-color: #2ecc71 !important;
+}
+
+input.unavailable {
+  border-color: #e74c3c !important;
+}
+
+.error-text {
+  color: #e74c3c;
+  font-size: 0.8rem;
+  margin-top: -0.75rem;
+}

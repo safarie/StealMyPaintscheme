@@ -8,6 +8,7 @@ public interface IUserRepository
 {
     Task<User?> GetByIdAsync(int id);
     Task<User?> GetByUsernameOrEmailAsync(string username, string email);
+    Task<bool> ExistsByUsernameAsync(string username);
     Task AddAsync(User user);
     Task SaveChangesAsync();
 }
@@ -29,6 +30,11 @@ public class UserRepository : IUserRepository
     public async Task<User?> GetByUsernameOrEmailAsync(string username, string email)
     {
         return await _db.Users.FirstOrDefaultAsync(u => u.Username == username || u.Email == email);
+    }
+
+    public async Task<bool> ExistsByUsernameAsync(string username)
+    {
+        return await _db.Users.AnyAsync(u => u.Username == username);
     }
 
     public async Task AddAsync(User user)

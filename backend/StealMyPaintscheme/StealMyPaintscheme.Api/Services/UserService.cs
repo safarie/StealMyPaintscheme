@@ -1,4 +1,5 @@
-﻿using StealMyPaintscheme.Api.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using StealMyPaintscheme.Api.Models;
 using StealMyPaintscheme.Api.Repositories;
 
 namespace StealMyPaintscheme.Api.Services;
@@ -23,9 +24,21 @@ public class UserService : IUserService
         user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
         user.IsAdmin = false;
         
-        await _userRepository.AddAsync(user);
-        await _userRepository.SaveChangesAsync();
+        try
+        {
+            await _userRepository.AddAsync(user);
+            await _userRepository.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            return (null, "Gebruikersnaam of e-mail is al in gebruik.");
+        }
         
         return (user, null);
+    }
+
+    public async Task<bool> IsUsernameAvailableAsync(string username)
+    {
+        return !await _userRepository.ExistsByUsernameAsync(username);
     }
 }

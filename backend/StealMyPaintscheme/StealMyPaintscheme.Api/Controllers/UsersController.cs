@@ -27,4 +27,16 @@ public class UsersController : ControllerBase
 
         return CreatedAtAction(nameof(CreateUser), new { id = createdUser!.Id }, createdUser);
     }
+
+    [HttpGet("check-username")]
+    public async Task<IActionResult> CheckUsername([FromQuery] string username)
+    {
+        if (string.IsNullOrWhiteSpace(username))
+        {
+            return BadRequest("Gebruikersnaam is vereist.");
+        }
+
+        var isAvailable = await _userService.IsUsernameAvailableAsync(username);
+        return Ok(new { available = isAvailable });
+    }
 }

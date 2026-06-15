@@ -10,7 +10,20 @@
     }
 
     <label for="reg-username">Username</label>
-    <input type="text" id="reg-username" name="username" [(ngModel)]="username" placeholder="Username" required />
+    <div class="input-wrapper">
+      <input type="text" id="reg-username" name="username" [(ngModel)]="username" (ngModelChange)="onUsernameChange()" placeholder="Username" required
+             [class.available]="usernameAvailable() === true" [class.unavailable]="usernameAvailable() === false" />
+      @if (isCheckingUsername()) {
+        <span class="status-icon loading">...</span>
+      } @else if (usernameAvailable() === true) {
+        <span class="status-icon available">✓</span>
+      } @else if (usernameAvailable() === false) {
+        <span class="status-icon unavailable">✗</span>
+      }
+    </div>
+    @if (usernameAvailable() === false) {
+      <small class="error-text">Deze gebruikersnaam is al bezet.</small>
+    }
 
     <label for="reg-email">Email</label>
     <input type="email" id="reg-email" name="email" [(ngModel)]="email" placeholder="Email" required />
