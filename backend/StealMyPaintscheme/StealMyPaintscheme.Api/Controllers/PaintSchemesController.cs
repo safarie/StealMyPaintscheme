@@ -7,7 +7,7 @@ namespace StealMyPaintscheme.Api.Controllers;
 
 [ApiController]
 [Route("paint-schemes")]
-public class PaintSchemesController : ControllerBase
+public class PaintSchemesController : BaseController
 {
     private readonly IPaintSchemeService _schemeService;
 
@@ -20,8 +20,7 @@ public class PaintSchemesController : ControllerBase
     [Authorize]
     public async Task<IActionResult> CreatePaintScheme([FromBody] PaintScheme paintScheme)
     {
-        var userIdClaim = User.FindFirst("userId")?.Value;
-        if (userIdClaim == null || !int.TryParse(userIdClaim, out var userId))
+        if (!TryGetUserId(out var userId))
         {
             return Unauthorized();
         }
@@ -39,10 +38,7 @@ public class PaintSchemesController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetPaintSchemes()
     {
-        var userIdClaim = User.FindFirst("userId")?.Value;
-        int? currentUserId = int.TryParse(userIdClaim, out var id) ? id : null;
-
-        var schemes = await _schemeService.GetPaintSchemesAsync(currentUserId);
+        var schemes = await _schemeService.GetPaintSchemesAsync(CurrentUserId);
         return Ok(schemes);
     }
 
@@ -50,16 +46,12 @@ public class PaintSchemesController : ControllerBase
     [Authorize]
     public async Task<IActionResult> DeletePaintScheme(int id)
     {
-        var isAdmin = User.HasClaim("isAdmin", "true") || 
-                      User.HasClaim(c => c.Type.EndsWith("isAdmin") && c.Value.ToLower() == "true");
-
-        var userIdClaim = User.FindFirst("userId")?.Value ?? 
-                          User.FindFirst(c => c.Type.EndsWith("userId"))?.Value;
-
+        bool isAdmin = IsAdmin;
         int userId = 0;
+
         if (!isAdmin)
         {
-            if (userIdClaim == null || !int.TryParse(userIdClaim, out userId))
+            if (!TryGetUserId(out userId))
             {
                 return Unauthorized();
             }
@@ -79,8 +71,7 @@ public class PaintSchemesController : ControllerBase
     [Authorize]
     public async Task<IActionResult> UpdatePaintScheme(int id, [FromBody] PaintScheme updatedScheme)
     {
-        var userIdClaim = User.FindFirst("userId")?.Value;
-        if (userIdClaim == null || !int.TryParse(userIdClaim, out var userId))
+        if (!TryGetUserId(out var userId))
         {
             return Unauthorized();
         }

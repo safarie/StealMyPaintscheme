@@ -7,7 +7,7 @@ namespace StealMyPaintscheme.Api.Controllers;
 [ApiController]
 [Route("[controller]")]
 [Authorize]
-public class UploadController : ControllerBase
+public class UploadController : BaseController
 {
     private readonly IWebHostEnvironment _env;
     private readonly ILogger<UploadController> _logger;

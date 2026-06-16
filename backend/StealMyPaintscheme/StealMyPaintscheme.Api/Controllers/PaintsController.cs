@@ -8,7 +8,7 @@ namespace StealMyPaintscheme.Api.Controllers;
 [ApiController]
 [Route("[controller]")]
 [Authorize]
-public class PaintsController : ControllerBase
+public class PaintsController : BaseController
 {
     private readonly IPaintService _paintService;
 
@@ -20,8 +20,7 @@ public class PaintsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreatePaint([FromBody] Paint paint)
     {
-        var userIdClaim = User.FindFirst("userId")?.Value;
-        if (userIdClaim == null || !int.TryParse(userIdClaim, out var userId))
+        if (!TryGetUserId(out var userId))
         {
             return Unauthorized();
         }
@@ -41,8 +40,7 @@ public class PaintsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetPaints()
     {
-        var userIdClaim = User.FindFirst("userId")?.Value;
-        if (userIdClaim == null || !int.TryParse(userIdClaim, out var userId))
+        if (!TryGetUserId(out var userId))
         {
             return Unauthorized();
         }

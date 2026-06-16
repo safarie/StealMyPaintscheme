@@ -8,7 +8,7 @@ namespace StealMyPaintscheme.Api.Controllers;
 [ApiController]
 [Route("[controller]")]
 [Authorize]
-public class InventoryController : ControllerBase
+public class InventoryController : BaseController
 {
     private readonly IInventoryService _inventoryService;
 
@@ -20,8 +20,7 @@ public class InventoryController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateInventoryItem([FromBody] InventoryItem inventoryItem)
     {
-        var userIdClaim = User.FindFirst("userId")?.Value;
-        if (userIdClaim == null || !int.TryParse(userIdClaim, out var userId))
+        if (!TryGetUserId(out var userId))
         {
             return Unauthorized();
         }
@@ -39,8 +38,7 @@ public class InventoryController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetInventoryItems()
     {
-        var userIdClaim = User.FindFirst("userId")?.Value;
-        if (userIdClaim == null || !int.TryParse(userIdClaim, out var userId))
+        if (!TryGetUserId(out var userId))
         {
             return Unauthorized();
         }
@@ -52,8 +50,7 @@ public class InventoryController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteInventoryItem(int id)
     {
-        var userIdClaim = User.FindFirst("userId")?.Value;
-        if (userIdClaim == null || !int.TryParse(userIdClaim, out var userId))
+        if (!TryGetUserId(out var userId))
         {
             return Unauthorized();
         }
@@ -67,8 +64,7 @@ public class InventoryController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateInventoryItem(int id, [FromBody] InventoryItem updatedItem)
     {
-        var userIdClaim = User.FindFirst("userId")?.Value;
-        if (userIdClaim == null || !int.TryParse(userIdClaim, out var userId))
+        if (!TryGetUserId(out var userId))
         {
             return Unauthorized();
         }

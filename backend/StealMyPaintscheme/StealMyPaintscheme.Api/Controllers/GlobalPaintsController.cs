@@ -7,7 +7,7 @@ namespace StealMyPaintscheme.Api.Controllers;
 
 [ApiController]
 [Route("global-paints")]
-public class GlobalPaintsController : ControllerBase
+public class GlobalPaintsController : BaseController
 {
     private readonly IGlobalPaintService _globalPaintService;
 

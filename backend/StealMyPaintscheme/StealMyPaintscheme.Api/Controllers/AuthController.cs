@@ -6,7 +6,7 @@ namespace StealMyPaintscheme.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class AuthController : ControllerBase
+public class AuthController : BaseController
 {
     private readonly IAuthService _authService;
     // Dependency Injection

@@ -6,7 +6,7 @@ namespace StealMyPaintscheme.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class UsersController : ControllerBase
+public class UsersController : BaseController
 {
     private readonly IUserService _userService;
 
