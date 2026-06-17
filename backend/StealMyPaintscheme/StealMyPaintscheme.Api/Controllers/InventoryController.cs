@@ -7,7 +7,6 @@ namespace StealMyPaintscheme.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-[Authorize]
 public class InventoryController : BaseController
 {
     private readonly IInventoryService _inventoryService;
@@ -18,6 +17,7 @@ public class InventoryController : BaseController
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> CreateInventoryItem([FromBody] InventoryItem inventoryItem)
     {
         if (!TryGetUserId(out var userId))
@@ -36,6 +36,7 @@ public class InventoryController : BaseController
     }
 
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> GetInventoryItems()
     {
         if (!TryGetUserId(out var userId))
@@ -48,6 +49,7 @@ public class InventoryController : BaseController
     }
 
     [HttpDelete("{id}")]
+    [Authorize]
     public async Task<IActionResult> DeleteInventoryItem(int id)
     {
         if (!TryGetUserId(out var userId))
@@ -62,6 +64,7 @@ public class InventoryController : BaseController
     }
 
     [HttpPut("{id}")]
+    [Authorize]
     public async Task<IActionResult> UpdateInventoryItem(int id, [FromBody] InventoryItem updatedItem)
     {
         if (!TryGetUserId(out var userId))

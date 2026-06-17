@@ -7,7 +7,6 @@ namespace StealMyPaintscheme.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-[Authorize]
 public class PaintsController : BaseController
 {
     private readonly IPaintService _paintService;
@@ -18,6 +17,7 @@ public class PaintsController : BaseController
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> CreatePaint([FromBody] Paint paint)
     {
         if (!TryGetUserId(out var userId))
@@ -31,13 +31,14 @@ public class PaintsController : BaseController
         // In de oorspronkelijke code werd Ok(existingPaint) teruggestuurd bij bestaande verf.
         if (result.Id != 0 && result.Id != paint.Id)
         {
-             return Ok(result);
+            return Ok(result);
         }
 
         return CreatedAtAction(nameof(CreatePaint), new { id = result.Id }, result);
     }
 
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> GetPaints()
     {
         if (!TryGetUserId(out var userId))

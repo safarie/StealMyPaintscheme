@@ -6,7 +6,6 @@ namespace StealMyPaintscheme.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-[Authorize]
 public class UploadController : BaseController
 {
     private readonly IWebHostEnvironment _env;
@@ -19,6 +18,7 @@ public class UploadController : BaseController
     }
 
     [HttpPost]
+    [Authorize]
     [IgnoreAntiforgeryToken]
     public async Task<IActionResult> UploadImage(IFormFile file)
     {
