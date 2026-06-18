@@ -27,4 +27,9 @@ public abstract class BaseController : ControllerBase
         userId = id ?? 0;
         return id.HasValue;
     }
+
+    protected ActionResult UnauthorizedIfNoUser()
+    {
+        return Unauthorized("Gebruiker niet ingelogd of ongeldig token.");
+    }
 }

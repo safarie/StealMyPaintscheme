@@ -41,4 +41,14 @@ public class UserService : IUserService
     {
         return !await _userRepository.ExistsByUsernameAsync(username);
     }
+
+    public async Task<User?> GetByIdAsync(int id)
+    {
+        return await _userRepository.GetByIdAsync(id);
+    }
+
+    public async Task<User?> GetByUsernameOrEmailAsync(string username, string email)
+    {
+        return await _userRepository.GetByUsernameOrEmailAsync(username, email);
+    }
 }

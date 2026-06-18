@@ -9,20 +9,20 @@ namespace StealMyPaintscheme.Api.Services;
 
 public class AuthService : IAuthService
 {
-    private readonly IUserRepository _userRepository;
+    private readonly IUserService _userService;
     private readonly IConfiguration _config;
     private readonly ILogger<AuthService> _logger;
 
-    public AuthService(IUserRepository userRepository, IConfiguration config, ILogger<AuthService> logger)
+    public AuthService(IUserService userService, IConfiguration config, ILogger<AuthService> logger)
     {
-        _userRepository = userRepository;
+        _userService = userService;
         _config = config;
         _logger = logger;
     }
 
     public async Task<(string? Token, bool IsAdmin, string? Error)> LoginAsync(User loginUser)
     {
-        var user = await _userRepository.GetByUsernameOrEmailAsync(loginUser.Username, loginUser.Username);
+        var user = await _userService.GetByUsernameOrEmailAsync(loginUser.Username, loginUser.Username);
 
         bool isValid = false;
         try

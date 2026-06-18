@@ -22,7 +22,7 @@ public class InventoryController : BaseController
     {
         if (!TryGetUserId(out var userId))
         {
-            return Unauthorized();
+            return UnauthorizedIfNoUser();
         }
         
         var result = await _inventoryService.AddOrUpdateInventoryItemAsync(inventoryItem, userId);
@@ -41,7 +41,7 @@ public class InventoryController : BaseController
     {
         if (!TryGetUserId(out var userId))
         {
-            return Unauthorized();
+            return UnauthorizedIfNoUser();
         }
 
         var items = await _inventoryService.GetUserInventoryAsync(userId);
@@ -54,7 +54,7 @@ public class InventoryController : BaseController
     {
         if (!TryGetUserId(out var userId))
         {
-            return Unauthorized();
+            return UnauthorizedIfNoUser();
         }
 
         var success = await _inventoryService.DeleteInventoryItemAsync(id, userId);
@@ -69,7 +69,7 @@ public class InventoryController : BaseController
     {
         if (!TryGetUserId(out var userId))
         {
-            return Unauthorized();
+            return UnauthorizedIfNoUser();
         }
 
         var result = await _inventoryService.UpdateInventoryItemQuantityAsync(id, updatedItem.Quantity, userId);

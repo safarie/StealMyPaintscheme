@@ -22,7 +22,7 @@ public class PaintsController : BaseController
     {
         if (!TryGetUserId(out var userId))
         {
-            return Unauthorized();
+            return UnauthorizedIfNoUser();
         }
 
         var result = await _paintService.GetOrCreatePaintAsync(paint, userId);
@@ -43,7 +43,7 @@ public class PaintsController : BaseController
     {
         if (!TryGetUserId(out var userId))
         {
-            return Unauthorized();
+            return UnauthorizedIfNoUser();
         }
 
         var paints = await _paintService.GetUserPaintsAsync(userId);

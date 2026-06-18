@@ -22,7 +22,7 @@ public class PaintSchemesController : BaseController
     {
         if (!TryGetUserId(out var userId))
         {
-            return Unauthorized();
+            return UnauthorizedIfNoUser();
         }
 
         var (createdScheme, error) = await _schemeService.CreatePaintSchemeAsync(paintScheme, userId);
@@ -53,7 +53,7 @@ public class PaintSchemesController : BaseController
         {
             if (!TryGetUserId(out userId))
             {
-                return Unauthorized();
+                return UnauthorizedIfNoUser();
             }
         }
 
@@ -73,7 +73,7 @@ public class PaintSchemesController : BaseController
     {
         if (!TryGetUserId(out var userId))
         {
-            return Unauthorized();
+            return UnauthorizedIfNoUser();
         }
 
         var (scheme, error) = await _schemeService.UpdatePaintSchemeAsync(id, updatedScheme, userId);
