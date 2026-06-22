@@ -99,6 +99,8 @@ export class InventoryComponent implements OnInit {
     if (!rgb) return '';
     if (rgb.startsWith('#')) return rgb;
     if (rgb.includes(',')) {
+      // Zorg ervoor dat er geen dubbele rgb() omheen komt als het al zo is opgeslagen
+      if (rgb.startsWith('rgb')) return rgb;
       return `rgb(${rgb})`;
     }
     return rgb;

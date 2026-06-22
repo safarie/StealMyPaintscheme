@@ -175,11 +175,11 @@ td {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  border: 2px solid white;
+  border: 1px solid #e2e8f0;
   display: inline-block;
   vertical-align: middle;
   margin-right: 8px;
-  box-shadow: 0 0 0 1px #e2e8f0, 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 
