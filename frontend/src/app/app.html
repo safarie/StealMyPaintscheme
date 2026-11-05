@@ -9,6 +9,7 @@
     @if (authService.isLoggedIn()) {
       <a routerLink="/my-paint-schemes" routerLinkActive="active">My Schemes</a>
       <a routerLink="/inventory" routerLinkActive="active">Inventory</a>
+      <a routerLink="/account" routerLinkActive="active">Account</a>
       <a href="#" (click)="$event.preventDefault(); logout()">Logout</a>
     } @else {
       <a routerLink="/login" routerLinkActive="active">Login</a>
@@ -28,3 +29,7 @@
     </div>
   }
 </main>
+
+<footer style="text-align: center; padding: 1rem; font-size: 0.9rem;">
+  <a routerLink="/privacy-policy">Privacy Policy</a>
+</footer>

@@ -10,11 +10,8 @@ namespace StealMyPaintscheme.Api.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "ImageUrl",
-                table: "PaintSchemes",
-                type: "text",
-                nullable: true);
+            // ImageUrl is al toegevoegd in AddImageUrlToPaintScheme, dus alleen toevoegen als hij nog ontbreekt
+            migrationBuilder.Sql(@"ALTER TABLE ""PaintSchemes"" ADD COLUMN IF NOT EXISTS ""ImageUrl"" text NULL;");
         }
 
         /// <inheritdoc />

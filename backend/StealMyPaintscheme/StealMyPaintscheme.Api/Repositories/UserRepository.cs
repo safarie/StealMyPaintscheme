@@ -11,6 +11,8 @@ public interface IUserRepository
     Task<bool> ExistsByUsernameAsync(string username);
     Task AddAsync(User user);
     Task SaveChangesAsync();
+    Task<List<string>> GetImageUrlsOnlyUsedByUserAsync(int userId);
+    Task DeleteWithAllDataAsync(int userId);
 }
 
 public class UserRepository : IUserRepository
@@ -45,5 +47,39 @@ public class UserRepository : IUserRepository
     public async Task SaveChangesAsync()
     {
         await _db.SaveChangesAsync();
+    }
+
+    public async Task<List<string>> GetImageUrlsOnlyUsedByUserAsync(int userId)
+    {
+        // Afbeeldingen die ook in (gestolen) schema's van andere gebruikers staan blijven bewaard
+        return await _db.PaintSchemes
+            .Where(ps => ps.UserId == userId && ps.ImageUrl != null)
+            .Where(ps => !_db.PaintSchemes.Any(other => other.UserId != userId && other.ImageUrl == ps.ImageUrl))
+            .Select(ps => ps.ImageUrl!)
+            .Distinct()
+            .ToListAsync();
+    }
+
+    public async Task DeleteWithAllDataAsync(int userId)
+    {
+        await using var transaction = await _db.Database.BeginTransactionAsync();
+
+        var userPaintIds = _db.Paints.Where(p => p.UserId == userId).Select(p => p.Id);
+        var userSchemeIds = _db.PaintSchemes.Where(ps => ps.UserId == userId).Select(ps => ps.Id);
+
+        // Stappen van andere gebruikers mogen niet meer naar verf van deze gebruiker verwijzen
+        await _db.Steps
+            .Where(s => s.PaintId != null && userPaintIds.Contains(s.PaintId.Value))
+            .ExecuteUpdateAsync(set => set.SetProperty(s => s.PaintId, (int?)null));
+
+        await _db.Steps
+            .Where(s => s.PaintSchemeId != null && userSchemeIds.Contains(s.PaintSchemeId.Value))
+            .ExecuteDeleteAsync();
+        await _db.PaintSchemes.Where(ps => ps.UserId == userId).ExecuteDeleteAsync();
+        await _db.InventoryItems.Where(i => i.UserId == userId).ExecuteDeleteAsync();
+        await _db.Paints.Where(p => p.UserId == userId).ExecuteDeleteAsync();
+        await _db.Users.Where(u => u.Id == userId).ExecuteDeleteAsync();
+
+        await transaction.CommitAsync();
     }
 }

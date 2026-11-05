@@ -34,7 +34,12 @@
     <label for="reg-confirm">Confirm Password</label>
     <input type="password" id="reg-confirm" name="confirmPassword" [(ngModel)]="confirmPassword" placeholder="Confirm Password" required />
 
-    <button type="submit" class="primary">Register</button>
+    <label class="checkbox-label" for="reg-privacy">
+      <input type="checkbox" id="reg-privacy" name="acceptPrivacyPolicy" [(ngModel)]="acceptPrivacyPolicy" required />
+      <span>I have read the <a routerLink="/privacy-policy" target="_blank">privacy policy</a> and I am at least 16 years old.</span>
+    </label>
+
+    <button type="submit" class="primary" [disabled]="!acceptPrivacyPolicy">Register</button>
 
     <p style="text-align: center; margin-top: 1rem;">Already have an account? <a routerLink="/login">Login here</a></p>
   </form>

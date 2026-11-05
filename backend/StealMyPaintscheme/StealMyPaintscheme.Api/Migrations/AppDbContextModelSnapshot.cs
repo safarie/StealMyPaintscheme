@@ -231,6 +231,9 @@ namespace StealMyPaintscheme.Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime?>("PrivacyPolicyAcceptedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("text");

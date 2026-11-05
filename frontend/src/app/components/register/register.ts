@@ -20,6 +20,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   protected email = '';
   protected password = '';
   protected confirmPassword = '';
+  protected acceptPrivacyPolicy = false;
   protected errorMessage = signal<string | null>(null);
 
   protected usernameAvailable = signal<boolean | null>(null);
@@ -70,10 +71,16 @@ export class RegisterComponent implements OnInit, OnDestroy {
       return;
     }
 
+    if (!this.acceptPrivacyPolicy) {
+      this.errorMessage.set('Please confirm that you have read the privacy policy and are at least 16 years old.');
+      return;
+    }
+
     const user = {
       username: this.username,
       email: this.email,
-      password: this.password
+      password: this.password,
+      acceptPrivacyPolicy: this.acceptPrivacyPolicy
     };
 
     this.http.post(`${this.baseUrl}/Users`, user).subscribe({

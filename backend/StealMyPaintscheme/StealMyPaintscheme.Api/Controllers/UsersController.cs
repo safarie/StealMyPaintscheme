@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using StealMyPaintscheme.Api.Models;
 using StealMyPaintscheme.Api.Services;
 
@@ -37,7 +38,9 @@ public class UsersController : BaseController
             return BadRequest(error);
         }
 
-        return CreatedAtAction(nameof(CreateUser), new { id = createdUser!.Id }, createdUser);
+        // Geen wachtwoord-hash of andere gegevens teruggeven (dataminimalisatie)
+        return CreatedAtAction(nameof(CreateUser), new { id = createdUser!.Id },
+            new { createdUser.Id, createdUser.Username });
     }
 
     /// <summary>
@@ -55,5 +58,73 @@ public class UsersController : BaseController
 
         var isAvailable = await _userService.IsUsernameAvailableAsync(username);
         return Ok(new { available = isAvailable });
+    }
+
+    /// <summary>
+    /// Haalt de accountgegevens van de ingelogde gebruiker op.
+    /// </summary>
+    /// <returns>De gebruikersnaam, het e-mailadres en het moment van bevestiging van het privacybeleid.</returns>
+    [HttpGet("me")]
+    [Authorize]
+    public async Task<IActionResult> GetCurrentUser()
+    {
+        if (!TryGetUserId(out var userId))
+        {
+            return UnauthorizedIfNoUser();
+        }
+
+        var user = await _userService.GetByIdAsync(userId);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(new { user.Id, user.Username, user.Email, user.PrivacyPolicyAcceptedAt });
+    }
+
+    /// <summary>
+    /// Wijzigt de gebruikersnaam van de ingelogde gebruiker.
+    /// </summary>
+    /// <param name="request">De nieuwe gebruikersnaam.</param>
+    /// <returns>De bijgewerkte gebruikersnaam of een foutmelding.</returns>
+    [HttpPut("me/username")]
+    [Authorize]
+    public async Task<IActionResult> UpdateUsername([FromBody] UpdateUsernameRequest request)
+    {
+        if (!TryGetUserId(out var userId))
+        {
+            return UnauthorizedIfNoUser();
+        }
+
+        var (user, error) = await _userService.UpdateUsernameAsync(userId, request.Username);
+
+        if (error != null)
+        {
+            return BadRequest(error);
+        }
+
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(new { user.Id, user.Username });
+    }
+
+    /// <summary>
+    /// Verwijdert het account van de ingelogde gebruiker, inclusief schema's, inventaris, verf en afbeeldingen.
+    /// </summary>
+    /// <returns>NoContent bij succes, anders Unauthorized of NotFound.</returns>
+    [HttpDelete("me")]
+    [Authorize]
+    public async Task<IActionResult> DeleteCurrentUser()
+    {
+        if (!TryGetUserId(out var userId))
+        {
+            return UnauthorizedIfNoUser();
+        }
+
+        var success = await _userService.DeleteUserAsync(userId);
+        return success ? NoContent() : NotFound();
     }
 }

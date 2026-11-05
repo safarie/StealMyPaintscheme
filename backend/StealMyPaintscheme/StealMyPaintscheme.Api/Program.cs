@@ -75,20 +75,14 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 
 var app = builder.Build();
 
-// Database verbinding testen bij opstarten
+// Database aanmaken/bijwerken bij opstarten (zelfde als 'dotnet ef database update')
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     try
     {
-        if (db.Database.CanConnect())
-        {
-            Console.WriteLine("[INFO] Database verbinding succesvol.");
-        }
-        else
-        {
-            Console.WriteLine("[WAARSCHUWING] Database is niet bereikbaar. Controleer of de database draait.");
-        }
+        db.Database.Migrate();
+        Console.WriteLine("[INFO] Database verbinding succesvol en migrations zijn bijgewerkt.");
     }
     catch (Exception ex)
     {
@@ -110,11 +104,16 @@ if (app.Environment.IsDevelopment())
         if (Directory.Exists(frontendPath))
         {
             Console.WriteLine($"[INFO] Starten van frontend in: {frontendPath}");
-            
+
+            // Eerst npm install als de packages nog niet geïnstalleerd zijn
+            var npmCommand = Directory.Exists(Path.Combine(frontendPath, "node_modules"))
+                ? "npm start"
+                : "npm install && npm start";
+
             var startInfo = new ProcessStartInfo
             {
                 FileName = "cmd.exe",
-                Arguments = "/c npm start",
+                Arguments = $"/c {npmCommand}",
                 WorkingDirectory = frontendPath,
                 UseShellExecute = true, // Opent een nieuw terminalvenster
                 CreateNoWindow = false

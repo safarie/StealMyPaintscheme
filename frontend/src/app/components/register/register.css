@@ -114,6 +114,19 @@ input.unavailable {
   border-color: #e74c3c !important;
 }
 
+.auth-form .checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0;
+  font-weight: normal;
+}
+
+.auth-form .checkbox-label input {
+  margin-top: 0.2rem;
+  padding: 0;
+}
+
 .error-text {
   color: #e74c3c;
   font-size: 0.8rem;

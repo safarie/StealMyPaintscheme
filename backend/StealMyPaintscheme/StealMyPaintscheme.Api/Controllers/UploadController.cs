@@ -105,9 +105,10 @@ public class UploadController : BaseController
         }
         catch (Exception ex)
         {
-            // Log de fout en retourneer een serverfout.
+            // Log de volledige fout op de server, maar geef de client alleen een algemene melding
+            // zodat er geen interne details (zoals bestandspaden) naar buiten lekken.
             _logger.LogError(ex, "UploadImage: Fout bij het uploaden van bestand.");
-            return Problem($"Interne serverfout: {ex.Message}");
+            return Problem("Er is een fout opgetreden bij het uploaden van het bestand.");
         }
     }
 }

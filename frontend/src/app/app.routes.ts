@@ -5,6 +5,8 @@ import { RegisterComponent } from './components/register/register';
 import { PaintSchemesComponent } from './components/paint-schemes/paint-schemes';
 import { MyPaintSchemesComponent } from './components/my-paint-schemes/my-paint-schemes';
 import { InventoryComponent } from './components/inventory/inventory';
+import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy';
+import { AccountComponent } from './components/account/account';
 
 export const routes: Routes = [
   { path: '', component: LandingComponent },
@@ -13,5 +15,7 @@ export const routes: Routes = [
   { path: 'paint-schemes', component: PaintSchemesComponent },
   { path: 'my-paint-schemes', component: MyPaintSchemesComponent },
   { path: 'inventory', component: InventoryComponent },
+  { path: 'privacy-policy', component: PrivacyPolicyComponent },
+  { path: 'account', component: AccountComponent },
   { path: '**', redirectTo: '' }
 ];

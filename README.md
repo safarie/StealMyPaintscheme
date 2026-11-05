@@ -23,7 +23,7 @@
 ---
 
 ![Angular](https://img.shields.io/badge/Angular-21-DD0031?style=for-the-badge&logo=angular)
-![.NET](https://img.shields.io/badge/.NET-9-512BD4?style=for-the-badge&logo=dotnet)
+![.NET](https://img.shields.io/badge/.NET-10-512BD4?style=for-the-badge&logo=dotnet)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript)
 ![TailwindCSS](https://img.shields.io/badge/Tailwind-4-06B6D4?style=for-the-badge&logo=tailwindcss)
@@ -65,12 +65,33 @@ Over 500+ Warhammer paints pre-loaded from every major range (Citadel, Vallejo, 
 ```
 Frontend                    Backend                     Database
 ─────────────────────────   ──────────────────────────  ───────────────
-Angular 21                  ASP.NET Core (.NET 9)       PostgreSQL
-TypeScript 5.9              Minimal API                 Entity Framework Core
-Tailwind CSS v4             JWT Bearer Auth             EF Migrations
-RxJS 7.8                    Npgsql Driver
-Vitest                      Docker
+Angular 21                  ASP.NET Core (.NET 10)      PostgreSQL 15+
+TypeScript 5.9              Controllers + Services      Entity Framework Core 10
+Tailwind CSS v4             Repository pattern          EF Migrations
+RxJS 7.8                    JWT Bearer Auth             Npgsql provider
+Vitest                      BCrypt password hashing
+Prettier                    OpenAPI
+                            Docker
 ```
+
+The backend is layered: **Controllers** handle HTTP and authorization, **Services** hold the
+business logic, and **Repositories** own all database access through EF Core. Every controller
+inherits from `BaseController`, which centralizes reading the current user from the JWT.
+
+---
+
+## Hosting
+
+| Part | Where |
+|------|-------|
+| Frontend (Angular build) | Cloudflare Pages |
+| Backend (.NET API) | Docker container |
+| Database | PostgreSQL |
+| Uploaded images | `wwwroot/uploads` on the API server |
+
+> **Note:** Cloudflare Pages serves static assets, so the .NET API needs a container host of its
+> own. Image uploads currently land on the API container's local disk and are lost when the
+> container restarts — moving them to Cloudflare R2 is the intended next step.
 
 ---
 
@@ -78,7 +99,7 @@ Vitest                      Docker
 
 ### Prerequisites
 
-- [.NET 9 SDK](https://dotnet.microsoft.com/download)
+- [.NET 10 SDK](https://dotnet.microsoft.com/download)
 - [Node.js 20+](https://nodejs.org)
 - [PostgreSQL 15+](https://www.postgresql.org)
 - [Docker](https://www.docker.com) *(optional)*
@@ -86,7 +107,7 @@ Vitest                      Docker
 ### 1. Clone
 
 ```bash
-git clone https://github.com/your-username/StealMyPaintscheme.git
+git clone https://github.com/safarie/StealMyPaintscheme.git
 cd StealMyPaintscheme
 ```
 
@@ -138,18 +159,22 @@ App is live at `http://localhost:4200`
 
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
-| `POST` | `/login` | — | Get a JWT token |
+| `POST` | `/auth/login` | — | Get a JWT token |
 | `POST` | `/users` | — | Register a new account |
-| `GET` | `/paint-schemes` | Optional | Browse all community schemes |
+| `GET` | `/users/check-username?username=` | — | Check whether a username is still free |
+| `GET` | `/paint-schemes` | — | Browse all community schemes |
 | `POST` | `/paint-schemes` | Required | Create a new scheme |
-| `PUT` | `/paint-schemes/{id}` | Required | Update your scheme |
-| `DELETE` | `/paint-schemes/{id}` | Required | Delete your scheme |
-| `GET` | `/inventory-items` | Required | Get your paint inventory |
-| `POST` | `/inventory-items` | Required | Add a paint to inventory |
-| `PUT` | `/inventory-items/{id}` | Required | Update quantity |
-| `DELETE` | `/inventory-items/{id}` | Required | Remove from inventory |
+| `PUT` | `/paint-schemes/{id}` | Required | Update your scheme (owner or admin) |
+| `DELETE` | `/paint-schemes/{id}` | Required | Delete your scheme (owner or admin) |
+| `GET` | `/inventory` | Required | Get your paint inventory |
+| `POST` | `/inventory` | Required | Add a paint to inventory |
+| `PUT` | `/inventory/{id}` | Required | Update quantity |
+| `DELETE` | `/inventory/{id}` | Required | Remove from inventory |
+| `GET` | `/paints` | Required | Get the paints belonging to your schemes |
+| `POST` | `/paints` | Required | Create a paint |
 | `GET` | `/global-paints` | — | Browse the full paint database |
 | `POST` | `/global-paints/import` | Admin | Bulk-import paints |
+| `POST` | `/upload` | Required | Upload a scheme image (multipart form) |
 
 OpenAPI spec available at `/openapi/v1.json` in development.
 
@@ -162,10 +187,21 @@ StealMyPaintscheme/
 ├── backend/
 │   └── StealMyPaintscheme/
 │       └── StealMyPaintscheme.Api/
-│           ├── Models/          # PaintScheme, Paint, Step, User, InventoryItem
+│           ├── Controllers/     # HTTP endpoints + authorization
+│           │   ├── BaseController.cs      # Shared "who is the current user" logic
+│           │   ├── AuthController.cs      # Login / JWT
+│           │   ├── UsersController.cs     # Register + username check
+│           │   ├── PaintSchemesController.cs
+│           │   ├── PaintsController.cs
+│           │   ├── InventoryController.cs
+│           │   ├── GlobalPaintsController.cs
+│           │   └── UploadController.cs    # Image upload
+│           ├── Services/        # Business logic (I*Service + implementation)
+│           ├── Repositories/    # EF Core data access
+│           ├── Models/          # PaintScheme, Paint, Step, User, InventoryItem, GlobalPaint
 │           ├── Data/            # EF DbContext
 │           ├── Migrations/      # Database migrations
-│           ├── Program.cs       # All API endpoints (Minimal API)
+│           ├── Program.cs       # DI registration, JWT, CORS, pipeline
 │           └── Dockerfile
 └── frontend/
     └── src/
@@ -177,10 +213,13 @@ StealMyPaintscheme/
             │   ├── paint-schemes/   # Community scheme browser + steal
             │   ├── my-paint-schemes/# Your schemes + editor
             │   └── inventory/       # Paint inventory manager
-            └── services/
-                ├── auth.service.ts
-                ├── paint-scheme.service.ts
-                └── inventory.service.ts
+            ├── services/
+            │   ├── auth.service.ts
+            │   ├── paint-scheme.service.ts
+            │   └── inventory.service.ts
+            ├── models/              # TypeScript interfaces mirroring the API
+            └── interceptors/
+                └── error.interceptor.ts
 ```
 
 ---
