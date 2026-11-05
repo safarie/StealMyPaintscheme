@@ -1,0 +1,120 @@
+.account-container {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+  background-color: #f4f7f6;
+}
+
+.account-card {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 500px;
+  color: #4a5568;
+}
+
+.account-card h2 {
+  margin: 0 0 1.5rem 0;
+  text-align: center;
+  color: #2c3e50;
+  font-size: 1.8rem;
+}
+
+.account-card h3 {
+  margin: 0 0 0.75rem 0;
+  color: #2c3e50;
+}
+
+.details {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.5rem 1rem;
+  margin: 0;
+}
+
+.details dt {
+  font-weight: 600;
+}
+
+.details dd {
+  margin: 0;
+  word-break: break-all;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.section label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.section input {
+  padding: 0.75rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #f8fafc;
+}
+
+.section input:focus {
+  outline: none;
+  border-color: #3498db;
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+}
+
+.section p {
+  margin: 0;
+}
+
+.danger {
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.2rem;
+  border-radius: 0.375rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.danger:hover {
+  background-color: #b91c1c;
+}
+
+.message {
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-size: 0.875rem;
+}
+
+.message.error {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.message.success {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.privacy-link {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.privacy-link a {
+  color: #3498db;
+  font-weight: 600;
+}

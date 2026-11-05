@@ -1,0 +1,112 @@
+<article class="privacy-policy">
+  <h2>Privacy Policy</h2>
+  <p class="updated">Last updated: {{ lastUpdated }}</p>
+
+  <p>
+    Steal My Paint Scheme ("we", "us") respects your privacy. This policy explains which personal data we
+    process when you use this website, why we do so, and which rights you have under the General Data
+    Protection Regulation (GDPR, in Dutch: AVG) and the Dutch GDPR Implementation Act (UAVG).
+  </p>
+
+  <h3>1. Who is responsible?</h3>
+  <p>
+    The controller for the personal data described in this policy is <strong>[your name]</strong>,
+    the maker of Steal My Paint Scheme, located in the Netherlands.
+    For privacy questions or requests you can contact us at <strong>[your contact e-mail]</strong>.
+  </p>
+
+  <h3>2. Which data do we collect?</h3>
+  <ul>
+    <li><strong>Account data:</strong> username, e-mail address and password. Your password is stored only as a secure (bcrypt) hash; we can never see it.</li>
+    <li><strong>Content you create:</strong> paint schemes, painting steps, your paint inventory and images you upload.
+      Photos can contain hidden metadata (such as the location where the photo was taken). Please remove this before uploading if you do not want to share it.</li>
+    <li><strong>Read confirmation:</strong> the date and time at which you confirmed that you have read this privacy policy.</li>
+    <li><strong>Technical data:</strong> after logging in, a login token is stored in your browser's local storage so you stay logged in.
+      This is strictly necessary for the website to work, so no permission is required for it (art. 11.7a Dutch Telecommunications Act).
+      We do not use tracking, analytics or advertising cookies.</li>
+  </ul>
+  <p>
+    You need to provide a username, e-mail address and password to create an account. Without them we cannot
+    offer you an account. All other content is optional.
+  </p>
+
+  <h3>3. Why do we use this data, and on what legal basis?</h3>
+  <ul>
+    <li>To create and manage your account and let you log in (necessary for the performance of our agreement with you, art. 6(1)(b) GDPR).</li>
+    <li>To store and display your paint schemes and inventory (performance of the agreement, art. 6(1)(b) GDPR).</li>
+    <li>To be able to show that we informed you about this policy (our legitimate interest in demonstrating compliance with the GDPR, art. 5(2) and 6(1)(f) GDPR).</li>
+    <li>To keep the website secure, for example by preventing misuse and fixing errors (our legitimate interest in a safe and working website, art. 6(1)(f) GDPR).</li>
+  </ul>
+  <p>
+    We do not sell your data and do not use it for advertising or profiling.
+    We do not make decisions about you based solely on automated processing (art. 22 GDPR).
+  </p>
+
+  <h3>4. Who can see your data?</h3>
+  <p>
+    Your e-mail address and password are never shown to other users. Your username and paint schemes may be
+    visible to other visitors of the website, for example in the "All Schemes" overview. Other users can also
+    save a copy of a public paint scheme ("steal" it); such copies belong to that user.
+  </p>
+  <p>
+    We do not sell or give your data to third parties. The website is hosted by a hosting provider that
+    stores the data on our behalf. This provider acts as our processor and may only use the data on our
+    instructions, under a data processing agreement (art. 28 GDPR). We will name this provider here once the
+    website goes live. Your data is stored within the European Union / European Economic Area; if this ever changes,
+    we will only do so with appropriate safeguards (chapter V GDPR) and update this policy.
+    We only share data with others when we are legally required to do so.
+  </p>
+
+  <h3>5. How long do we keep your data?</h3>
+  <ul>
+    <li>Account data, paint schemes, inventory, uploaded images and the read confirmation: as long as you have an account.</li>
+    <li>When you delete your account, this data is removed immediately. Copies of your schemes that other users
+      saved remain part of their account.</li>
+    <li>Technical server logs used for security and error handling are kept for no longer than necessary for that purpose.</li>
+    <li>The login token in your browser is removed when you log out.</li>
+  </ul>
+
+  <h3>6. Security</h3>
+  <p>
+    We take appropriate technical and organisational measures to protect your data, such as password hashing,
+    access control on personal data and validation of uploaded files.
+  </p>
+
+  <h3>7. Your rights</h3>
+  <p>Under the GDPR you have the right to:</p>
+  <ul>
+    <li>access the personal data we hold about you (art. 15);</li>
+    <li>have incorrect data corrected (art. 16);</li>
+    <li>have your data deleted, the "right to be forgotten" (art. 17);</li>
+    <li>restrict the processing of your data (art. 18);</li>
+    <li>receive your data in a portable format (art. 20);</li>
+    <li>object to processing based on our legitimate interest (art. 21).</li>
+  </ul>
+  <p>
+    When you are logged in, you can view your account data, change your username and delete your account
+    yourself on the <a routerLink="/account">Account</a> page.
+    For all other requests, contact us at the address in section 1. We respond within one month; for complex
+    requests this period can be extended by two more months, in which case we will let you know (art. 12(3) GDPR).
+    We may ask you to confirm your identity first.
+  </p>
+  <p>
+    If you are not satisfied with how we handle your data, you have the right to file a complaint with the Dutch
+    Data Protection Authority
+    (<a href="https://autoriteitpersoonsgegevens.nl" target="_blank" rel="noopener">Autoriteit Persoonsgegevens</a>).
+  </p>
+
+  <h3>8. Minimum age</h3>
+  <p>
+    This website is intended for people aged 16 and older. If you are younger than 16, please do not create an account.
+  </p>
+
+  <h3>9. Changes</h3>
+  <p>
+    We may update this policy. The date at the top shows when it was last changed. In case of important
+    changes we will inform you.
+  </p>
+
+  @if (!authService.isLoggedIn()) {
+    <p class="back"><a routerLink="/register">Back to registration</a></p>
+  }
+</article>

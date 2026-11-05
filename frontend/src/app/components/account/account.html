@@ -1,0 +1,40 @@
+<div class="account-container">
+  <div class="account-card">
+    <h2>My Account</h2>
+
+    @if (errorMessage()) {
+      <div class="message error">{{ errorMessage() }}</div>
+    }
+    @if (successMessage()) {
+      <div class="message success">{{ successMessage() }}</div>
+    }
+
+    @if (account(); as acc) {
+      <dl class="details">
+        <dt>Username</dt>
+        <dd>{{ acc.username }}</dd>
+        <dt>Email</dt>
+        <dd>{{ acc.email }}</dd>
+        @if (acc.privacyPolicyAcceptedAt) {
+          <dt>Privacy policy read on</dt>
+          <dd>{{ acc.privacyPolicyAcceptedAt | date: 'd MMMM yyyy, HH:mm' }}</dd>
+        }
+      </dl>
+
+      <form class="section" (submit)="onUpdateUsername($event)">
+        <h3>Change username</h3>
+        <label for="account-username">New username</label>
+        <input type="text" id="account-username" name="username" [(ngModel)]="newUsername" required minlength="3" />
+        <button type="submit" class="primary" [disabled]="newUsername.trim() === acc.username">Save username</button>
+      </form>
+
+      <section class="section danger-zone">
+        <h3>Delete account</h3>
+        <p>This permanently deletes your account, paint schemes, inventory and uploaded images. This cannot be undone.</p>
+        <button type="button" class="danger" (click)="deleteAccount()">Delete my account</button>
+      </section>
+    }
+
+    <p class="privacy-link">Read how we handle your data in our <a routerLink="/privacy-policy">privacy policy</a>.</p>
+  </div>
+</div>
