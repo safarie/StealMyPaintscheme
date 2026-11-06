@@ -76,8 +76,9 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 var app = builder.Build();
 
 // Database aanmaken/bijwerken bij opstarten (zelfde als 'dotnet ef database update')
-using (var scope = app.Services.CreateScope())
+if (!app.Environment.IsEnvironment("Testing"))
 {
+    using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     try
     {
@@ -144,3 +145,5 @@ app.MapControllers();
 app.MapGet("/hello-world", () => "Hello world!");
 
 app.Run();
+
+public partial class Program { }
