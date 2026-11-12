@@ -1,0 +1,17 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: StealMyPaintscheme.Api/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: ${DATABASE_CONNECTION:?Stel DATABASE_CONNECTION in}
+      Jwt__Key: ${JWT_KEY:?Stel JWT_KEY in}
+    volumes:
+      - uploads:/app/wwwroot/uploads
+
+volumes:
+  uploads:
